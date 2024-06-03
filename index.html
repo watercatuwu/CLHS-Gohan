@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-tw">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LunCLHS Next</title>
+    <meta name="description" content="簡潔、美觀的壢中熱食部點餐系統" />
+    <meta content="LunCLHS Next" property="og:title" />
+    <meta content="壢中熱食部點餐系統" property="og:description" />
+    <meta content="https://lunclhs.web.app/" property="og:url" />
+    <meta content="#2E90C1" data-react-helmet="true" name="theme-color" />
+    <script>
+      const theme = localStorage.getItem('theme')
+      if (theme){
+        document.documentElement.setAttribute('data-theme', theme)
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

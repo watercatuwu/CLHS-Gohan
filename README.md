@@ -1,0 +1,1 @@
+icon: flowbite-icons, Remix icons, Google Materials icons, carnbon icons
