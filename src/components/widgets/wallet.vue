@@ -1,5 +1,5 @@
 <template>
-    <div class="card bg-base-300 shadow-md border-gray-400 glass">
+    <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <div class="avatar">
             </div>

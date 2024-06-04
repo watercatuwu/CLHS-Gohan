@@ -2,7 +2,8 @@
 import { GoogleAuthProvider } from 'firebase/auth'
 export const googleAuthProvider = new GoogleAuthProvider()
 googleAuthProvider.setCustomParameters({
-		hd: 'clhs.tyc.edu.tw',
+  prompt: "select_account",
+	hd: 'student.clhs.tyc.edu.tw',
 	});
 </script>
 
@@ -14,7 +15,7 @@ import { useRouter } from 'vue-router'
 
 import {
   getRedirectResult,
-  signInWithPopup,
+  signInWithRedirect,
   signOut,
   GoogleAuthProvider
 } from 'firebase/auth'
@@ -26,12 +27,7 @@ const router = useRouter()
 // display errors if any
 const error = ref(null)
 function signinRedirect() {
-    signInWithPopup(auth, googleAuthProvider)
-    .then(data =>{
-        router.push('/profile')
-        const currentUser = useCurrentUser()
-        sessionStorage.setItem('currentUser', JSON.stringify(currentUser.value))
-    })
+  signInWithRedirect(auth, googleAuthProvider)
     .catch((reason) => {
     console.error('Failed signinRedirect', reason)
     error.value = reason
@@ -41,14 +37,21 @@ function signinRedirect() {
 // only on client side
 onMounted(() => {
   getRedirectResult(auth)
+  .then((result) => {
+      if (result.user) {
+        const currentUser = result.user;
+        console.log(currentUser);
+        router.push('/profile');
+        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+      }
+    })
   .catch((reason) => {
     console.error('Failed redirect result', reason)
     error.value = reason
   })
 })
 
-const demo = () => {
-  router.push('/profile')
+function demo() {
   const demoUser = {
     displayName: 'demo',
     email: 'demo',
@@ -56,21 +59,21 @@ const demo = () => {
     uid: 'demo',
   }
   sessionStorage.setItem('currentUser', JSON.stringify(demoUser))
+  router.push('/profile')
 }
 </script>
 
 <template>
-    <ErrorBox v-if="error" :error="error" />
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <div class="avatar">
             </div>
             <h2 class="card-title text-2xl my-2">LunCLHS NEXT</h2>
             <div class="card-actions justify-center">
-                <button class="btn btn-primary my-2 btn-wide" @click="signinRedirect()"><googleicon />SignIn with Google</button>
+                <button type="button" class="btn btn-primary my-2 btn-wide" @click="signinRedirect()"><googleicon />SignIn with Google</button>
             </div>
             <div class="card-actions justify-center">
-                <button class="link my-2" @click="demo()">demo</button>
+                <button type="button"  class="link my-2" @click="demo">demo</button>
             </div>
         </div>
       </div>

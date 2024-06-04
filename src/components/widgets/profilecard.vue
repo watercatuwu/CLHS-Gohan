@@ -35,7 +35,10 @@ const handlelogout = () => {
     signOut(auth)
     .then(function(){
         sessionStorage.removeItem('currentUser')
-        router.push('/login')
+        sessionStorage.removeItem('annoucements')
+        sessionStorage.removeItem('cart')
+        sessionStorage.removeItem('products')
+        router.push('/')
      })
     .catch(function(error) {
         console.log(error)

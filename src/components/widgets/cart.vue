@@ -24,13 +24,14 @@
                     <tr>
                         <th></th>
                         <td>總計</td>
-                        <td>{{arrSum(cart)}}</td>
+                        <td>{{priceSum(cart)}}</td>
                         <td></td>
                     </tr>
                   </tbody>
                 </table>
             </div>
-            <button @click="choosebot" class="btn btn-neutral" >選擇困難小幫手</button>
+            <button v-show="isFormClosed" disabled class="btn btn-neutral" >表單已截止</button>
+            <button v-show="!isFormClosed" @click="choosebot" class="btn btn-neutral" >選擇困難小幫手</button>
             <button v-show="Object.keys(cart).length > 0" @click="checkout" class="btn btn-primary" >結帳</button>
             <button v-show="Object.keys(cart).length > 0" @click="clearCart" class="btn btn-error" >清空購物車</button>
         </div>
@@ -38,7 +39,7 @@
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <h2 class="card-title text-xl"><shopicon />商品</h2>
-            <div v-if="products.length > 0" class="overflow-x-auto">
+            <div v-if="isDataGet" class="overflow-x-auto">
                 <table class="table table-zebra">
                   <thead>
                     <tr>
@@ -49,12 +50,12 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="product in products">
+                    <tr v-for="product in products.data">
                       <th>{{product.code}}</th>
                       <td>{{product.name}}</td>
                       <td>{{product.price}}</td>
                       <td>
-                        <button @click="addToCart(product)"  class="btn btn-secondary btn-xs">加入</button>
+                        <button @click="addToCart(product)" :disabled="isFormClosed"  class="btn btn-secondary btn-xs">加入</button>
                       </td>
                     </tr>
                   </tbody>
@@ -89,7 +90,7 @@
               <tr>
                   <th></th>
                   <td>總計</td>
-                  <td>{{arrSum(cart)}}</td>
+                  <td>{{priceSum(cart)}}</td>
                   <td></td>
               </tr>
             </tbody>
@@ -125,23 +126,45 @@ import shopicon from '@/assets/icons/shopping.svg'
 
 import { ref } from 'vue'
 import axios from 'axios'
-import { DateTime } from 'luxon';
+import { DateTime } from 'luxon'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { menuRef, ordersRef } from '@/firebase'
 
 const cart = ref(JSON.parse(sessionStorage.getItem('cart')) || [])
-const products = ref([])
+const products = ref(JSON.parse(sessionStorage.getItem('products')) || {})
 const payment = ref('')
+const isDataGet = ref(false)
 
-const fethchData = async () => {
-    if (sessionStorage.getItem('products')) {
-        products.value = JSON.parse(sessionStorage.getItem('products'))
-    }
-    const res = await axios('https://lunclhs.deno.dev/api/data/table/today')
-    //const res = await axios('https://lunclhs2.watercatuwu.workers.dev/table/tue')
-    sessionStorage.setItem('products', JSON.stringify(res.data))
-    products.value = res.data
+const now = DateTime.now().setZone('Asia/Taipei')
+
+const isFormClosed = ref(false)
+isFormClosed.value =  now.hour < 12 && now.hour > 10 ? true : false
+
+const getFirestore = async (collectionRef, docid) => {
+  const docRef = doc(collectionRef, docid)
+  const docsnap = await getDoc(docRef)
+  return docsnap.data()
 }
 
-fethchData()
+const weekinyear = now.year.toString()+now.weekNumber.toString()
+
+if (Object.keys(products.value).length === 0) {
+  getFirestore(menuRef,weekinyear)
+  .then(data => {
+    let weekday = now.hour>13 ? now.plus({days: 1}).setLocale('en').weekdayShort.toLowerCase() : now.setLocale('en').weekdayShort.toLowerCase()
+    //設定表單更新時間
+    const result = data[weekday]
+    sessionStorage.setItem('products', JSON.stringify(result))
+    console.log(result)
+    isDataGet.value = true
+    products.value = result
+})
+.catch(error => {
+  console.error('There was a problem with the fetch operation:', error)
+})
+}else{
+  isDataGet.value = true
+}
 
 const addToCart = (product) => {
     if(Number.isInteger(product.code)){
@@ -172,14 +195,26 @@ const clearCart = () => {
 }
 
 const checkoutsend = () => {
-  console.log(cart.value)
-  console.log(payment.value)
-  showToast('結帳成功', 'alert-success')
-  clearCart()
+  const data = {
+    "order": cart.value,
+    "payment": payment.value,
+    "isPay": false
+  }
+  const uid = JSON.parse(sessionStorage.getItem('currentUser')).uid
+  console.log(data)
+  const docRef = doc(ordersRef, uid)
+  setDoc(docRef, data)
+    .then(() => {
+      showToast('結帳成功', 'alert-success')
+      clearCart()
+    })
+    .catch((error) => {
+      showToast(error, 'alert-error')
+    })
 }
 
 const choosebot = () => {
-  const main = products.value[getRandom(0,10)]
+  const main = products.value.data[getRandom(0,10)]
   addToCart(main)
 }
 
@@ -196,7 +231,7 @@ const showToast = (msg, type) => {
 }
 
 //tools
-const arrSum = (arr) =>{
+const priceSum = (arr) =>{
     let sum = 0
     for (let i = 0; i < arr.length; i++) {
         sum += arr[i].price

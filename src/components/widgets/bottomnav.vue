@@ -1,6 +1,6 @@
 <template>
   <div class="btm-nav">
-    <RouterLink to="/" :class="{ active: active===0 }">
+    <RouterLink to="/home" :class="{ active: active===0 }">
       <homeicon />
     </RouterLink>
     <RouterLink to="/shop" :class="{ active: active===1 }">

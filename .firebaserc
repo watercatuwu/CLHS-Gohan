@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "lunclhs"
-  }
+    "default": "lunclhsnext",
+    "lunclhsnext": "lunclhsnext"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

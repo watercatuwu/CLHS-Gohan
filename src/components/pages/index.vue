@@ -4,7 +4,7 @@
         <div class="hero-content text-center">
           <div class="max-w-md">
             <h1 class="text-4xl font-bold">LunCLHS NEXT</h1>
-            <p class="py-6">現代化、美觀的壢中點餐系統</p>
+            <p class="my-3">簡潔、迅速的點餐系統</p>
             <RouterLink to="/login">
                 <button class="btn btn-primary">Get Started</button>
             </RouterLink>

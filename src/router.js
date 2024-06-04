@@ -19,9 +19,8 @@ const router = createRouter({
   routes,
 })
 
-const currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
-
 router.beforeEach((to, from) => {
+  const currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
   if (to.meta.requiresAuth && !currentUser) {
     return {
       path: '/login',

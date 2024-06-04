@@ -6,10 +6,13 @@ export default {
   },
   daisyui: {
     themes: [
-      "nord",
       "dark",
-      "light",
+      "winter",
+      "lofi",
+      "black",
       "valentine",
+      "cupcake",
+      "bumblebee",
       {"Cappuccino": {
         'primary' : '#4b3832',
         'primary-focus' : '#29211e',
