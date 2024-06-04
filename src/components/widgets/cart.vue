@@ -195,13 +195,15 @@ const clearCart = () => {
 }
 
 const checkoutsend = () => {
+  const uid = JSON.parse(sessionStorage.getItem('currentUser')).uid
+  if (uid === "demo") {
+    showToast('請先登入', 'alert-error')
+  }else{
   const data = {
     "order": cart.value,
     "payment": payment.value,
     "isPay": false
   }
-  const uid = JSON.parse(sessionStorage.getItem('currentUser')).uid
-  console.log(data)
   const docRef = doc(ordersRef, uid)
   setDoc(docRef, data)
     .then(() => {
@@ -211,6 +213,7 @@ const checkoutsend = () => {
     .catch((error) => {
       showToast(error, 'alert-error')
     })
+  }
 }
 
 const choosebot = () => {
