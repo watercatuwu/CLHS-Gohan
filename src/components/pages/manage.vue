@@ -1,11 +1,11 @@
 <template>
     <div>
         <div class="container mx-auto p-2 pb-24 space-y-2">
-            <cart />
+            <manage />
         </div>
     </div>
 </template>
 
 <script setup>
-import cart from '@/components/widgets/cart.vue'
+import manage from '@/components/widgets/manage.vue'
 </script>

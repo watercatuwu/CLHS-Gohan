@@ -1,15 +1,20 @@
 <template>
-    <div class="container mx-auto p-2 pb-24 space-y-2">
-        <profilecard />
-        <settings />
-        <about />
+    <div>
+        <div class="container mx-auto p-2 pb-24 space-y-2">
+            <profilecard />
+            <cardlink :uid="uid" :to="'/manage'" :text="'管理頁面'" />
+            <settings />
+        </div>
     </div>
-    <bottomnav :active="2" />
 </template>
 
 <script setup>
-import bottomnav from '@/components/widgets/bottomnav.vue'
 import profilecard from '@/components/widgets/profilecard.vue'
 import settings from '@/components/widgets/settings.vue'
-import about from '@/components/widgets/about.vue'
+import cardlink from '@/components/widgets/cardlink.vue'
+
+import { ref } from 'vue'
+
+const currentUser = ref(JSON.parse(sessionStorage.getItem('currentUser')))
+const uid = ref(currentUser.value.uid)
 </script>

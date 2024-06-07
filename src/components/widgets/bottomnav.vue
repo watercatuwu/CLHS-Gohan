@@ -1,13 +1,16 @@
 <template>
   <div class="btm-nav">
-    <RouterLink to="/home" :class="{ active: active===0 }">
+    <RouterLink to="/home" @click="active=0" :class="{ active: active===0 }">
       <homeicon />
+      <span class="btm-nav-label text-sm">主頁</span>
     </RouterLink>
-    <RouterLink to="/shop" :class="{ active: active===1 }">
+    <RouterLink to="/shop" @click="active=1" :class="{ active: active===1 }">
       <storeicon />
+      <span class="btm-nav-label text-sm">商店</span>
     </RouterLink>
-    <RouterLink to="/profile" :class="{ active: active===2 }">
+    <RouterLink to="/profile" @click="active=2" :class="{ active: active===2 }">
       <usericon />
+      <span class="btm-nav-label text-sm">個人檔案</span>
     </RouterLink>
   </div>
 </template>
@@ -21,9 +24,5 @@ import { RouterLink } from 'vue-router'
 
 import { ref } from 'vue';
 
-const props = defineProps({
-  active: { type: Number,required: true },
-});
-
-const active = ref(props.active);
+const active = ref(2);
 </script>

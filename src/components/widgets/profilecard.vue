@@ -12,9 +12,8 @@
             </div>
             <h2 class="card-title text-xl">{{currentUser.displayName}}</h2>
             <p class="text-gray-500">{{currentUser.email}}</p>
-            <div class="flex gap-2">
-                <div class="badge badge-primary text-base">熱食部會員</div>
-                <div class="badge badge-secondary text-base">uwub</div>
+            <div v-if="userdata.tags" class="flex gap-2">
+                <div v-for="(tag, index) in userdata.tags" class="badge badge-neutral text-base">{{tag}}</div>
             </div>
         </div>
       </div>
@@ -22,26 +21,24 @@
 
 <script setup>
 import { signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue'
 import { useFirebaseAuth } from 'vuefire'
 
 const currentUser = ref(JSON.parse(sessionStorage.getItem('currentUser')))
-const router = useRouter()
+const userdata = ref(JSON.parse(sessionStorage.getItem('userdata')))
 
+const router = useRouter()
 const auth = useFirebaseAuth()
 
-const handlelogout = () => {
-    signOut(auth)
-    .then(function(){
-        sessionStorage.removeItem('currentUser')
-        sessionStorage.removeItem('annoucements')
-        sessionStorage.removeItem('cart')
-        sessionStorage.removeItem('products')
-        router.push('/')
-     })
-    .catch(function(error) {
-        console.log(error)
-    });
+const handlelogout = async () => {
+  try {
+    await signOut(auth)
+    sessionStorage.clear()
+    await router.push('/');
+  } catch (error) {
+    console.log(error);
+  }
 };
 </script>
