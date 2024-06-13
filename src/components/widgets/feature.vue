@@ -1,6 +1,6 @@
 <template>
     <div class="w-full p-10 bg-base-200">
-        <div class="m-8 space-y-10">
+        <div class="my-8 space-y-10">
           <h1 class="text-3xl font-bold">特色</h1>
           <div>
             <h2 class="text-2xl font-bold flex items-center"><eyeicon />瀏覽菜單</h2>

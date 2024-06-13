@@ -12,6 +12,7 @@ export default defineConfig({
     }
   },
   plugins: [vue(), svgLoader(), VitePWA({
+      cachingStrategy: 'NetworkOnly',
       manifest: {
       name: 'LunCLHS Next',
       short_name: 'LunCLHS Next',

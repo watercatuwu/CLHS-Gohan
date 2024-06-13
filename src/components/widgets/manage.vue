@@ -52,14 +52,16 @@
                   <tr>
                     <th></th>
                     <th>餐點</th>
-                    <th>數量</th>
+                    <th>正常</th>
+                    <th>加飯</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="product in products">
-                    <th>{{product.code}}</th>
-                    <td>{{product.name}}</td>
-                    <td>{{product.amount}}</td>
+                  <tr v-for="(value, key) of products">
+                    <th>{{key}}</th>
+                    <td>{{value.name}}</td>
+                    <td>{{value.amount}}</td>
+                    <td>{{value.addriceAmount}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -75,13 +77,9 @@ import { usersRef, ordersRef, menuRef } from '@/firebase'
 
 const now = DateTime.now().setZone('Asia/Taipei')
 const products = JSON.parse(sessionStorage.getItem('products')) === null ? ref([]) : ref(JSON.parse(sessionStorage.getItem('products')).data)
-const newproducts = ref([])
 
-const isDataGet = ref(false)
 const table = ref([])
 const tableType = ref("stu")
-
-const clas = ref(JSON.parse(sessionStorage.getItem('userdata')).class)
 
 const getFirestore = async (collectionRef, docid) => {
   const docRef = doc(collectionRef, docid)
@@ -89,33 +87,18 @@ const getFirestore = async (collectionRef, docid) => {
   return docsnap.data()
 }
 
-const weekinyear = now.year.toString()+now.weekNumber.toString()
-
-if (products.value.length === 0) {
-  getFirestore(menuRef,weekinyear)
-  .then(data => {
-    let weekday = now.hour>13 ? now.plus({days: 1}).setLocale('en').weekdayShort.toLowerCase() : now.setLocale('en').weekdayShort.toLowerCase()
-    //設定表單更新時間
-    const result = data[weekday]
-    sessionStorage.setItem('products', JSON.stringify(result))
-    console.log(result)
-    isDataGet.value = true
-    products.value = result.data
-})
-.catch(error => {
-  console.error('There was a problem with the fetch operation:', error)
-})
-}else{
-  isDataGet.value = true
-}
-
 const fetchDatas = async () => {
   try {
-    console.log(now.toISODate())
-    getFirestore(ordersRef, now.toISODate())
+    const clas = JSON.parse(sessionStorage.getItem('userdata')).class
+    const now = DateTime.now().setZone('Asia/Taipei')
+    const ISOstring = now.hour>13 ? now.plus({days: 1}).toISODate() : now.toISODate()
+    getFirestore(ordersRef, ISOstring)
     .then(data => {
-      console.log(data)
-
+      for (const key in data) {
+        if(clas === data[key]['class']){
+          table.value.push(data[key])
+        }
+      }
     })
   } catch (error) {
     console.log('查詢文件時出錯：', error);
@@ -161,25 +144,25 @@ const priceSum = (arr) =>{
 }
 
 const ordersCount = () => {
-    let counter = {}
+    const obj = {}
+    console.log(table.value)
     for (let t of table.value) {
-        t.order.forEach((food) => {
-            counter[food.code] = (counter[food.code] || 0) + 1
-        })
-    }
-
-    //此段待改太亂了
-    //生成新的products
-    //刪除無效的商品
-    for (let i = 0; i < products.value.length; i++) {
-        let product = products.value[i]
-        if (product.code in counter) {
-            product.amount = counter[product.code]
-        }else{
-            products.value.splice(i, 1);
-            i--; // 由於刪除了一個元素，需要將索引減1
+      t.order.forEach((orderfood) => {
+        console.log(orderfood)
+        if (!obj.hasOwnProperty(orderfood.code)) {
+          obj[orderfood.code] = orderfood
+          obj[orderfood.code].addriceAmount = 0
+          obj[orderfood.code].amount = 0
         }
+        if (orderfood.addrice){
+          obj[orderfood.code].addriceAmount ++
+        }else{
+          obj[orderfood.code].amount ++
+        }
+      })
     }
+    products.value = obj
     tableType.value = "food"
+    console.log(products.value)
 }
 </script>

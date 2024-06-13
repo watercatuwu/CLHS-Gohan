@@ -20,9 +20,17 @@ import homeicon from '@/assets/icons/home.svg'
 import storeicon from '@/assets/icons/store.svg'
 import usericon from '@/assets/icons/user-circle.svg'
 
-import { RouterLink } from 'vue-router'
-
 import { ref } from 'vue';
 
-const active = ref(2);
+const currentURL = window.location.href;
+
+const url = new URL(currentURL);
+
+const currentPath = url.pathname;
+
+console.log(currentPath)
+
+const PATHS = ['/home', '/shop', '/profile'];
+
+const active = ref(PATHS.indexOf(currentPath));
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isShowToast" class="toast toast-center z-10">
+    <div v-if="isShowToast" class="toast toast-center z-50">
         <div class="alert" :class="[toastType]">
           <span>{{toastMsg}}</span>
         </div>

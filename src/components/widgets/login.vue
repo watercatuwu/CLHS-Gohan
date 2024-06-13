@@ -10,12 +10,13 @@ googleAuthProvider.setCustomParameters({
 <script setup>
 import googleicon from '@/assets/icons/google.svg'
 
+import toast from '@/components/widgets/toast.vue'
+
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import {
-  getRedirectResult,
-  signInWithRedirect,
+  signInWithPopup,
   setPersistence,
   browserLocalPersistence,
   signOut,
@@ -26,56 +27,54 @@ import { useCurrentUser, useFirebaseAuth } from 'vuefire'
 import { usersRef } from '@/firebase'
 
 const auth = useFirebaseAuth()
-
 const router = useRouter()
 
-// display errors if any
-const error = ref(null)
-function signinRedirect() {
-  signInWithRedirect(auth, googleAuthProvider)
-    .catch((reason) => {
-    console.error('Failed signinRedirect', reason)
-    error.value = reason
-  })
-}
+const loading = ref(false)
 
-onMounted(() => {
-  getRedirectResult(auth)
-  .then((result) => {
+function signInPopup() {
+  loading.value = true
+  showToast('登入中', 'alert-info')
+  signInWithPopup(auth, googleAuthProvider)
+    .then((result) => {
       if (result.user) {
         const currentUser = result.user;
         sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
         getDoc(doc(usersRef, currentUser.uid))
           .then((data) => {
             if (!data.exists()) {
-              const displayName = currentUser.displayName
-              const classAndNumber = displayName.slice(0, 6).split('.')
-              const data = {
-                class: classAndNumber[0],
-                number: classAndNumber[1],
-                id: currentUser.email.slice(1,7),
-                tags: ['熱食部會員'],
-                uid: currentUser.uid,
-              }
+                const displayName = currentUser.displayName
+                const classAndNumber = displayName.slice(0, 6).split('.')
+                const data = {
+                  class: classAndNumber[0],
+                  number: classAndNumber[1],
+                  id: currentUser.email.slice(1,7),
+                  tags: ['熱食部會員'],
+                  uid: currentUser.uid,
+                }
               setDoc(doc(usersRef, currentUser.uid), data)
+              sessionStorage.setItem('userdata', JSON.stringify(data));
             }else{
               sessionStorage.setItem('userdata', JSON.stringify(data.data()));
             }
           })
+        showToast('登入成功', 'alert-success')
         router.push({ name: 'profile' });
       }
     })
-  .catch((reason) => {
-    console.error('Failed redirect result', reason)
-    error.value = reason
-  })
-})
+    .catch((reason) => {
+      console.error('Failed signinRedirect', reason)
+      showToast('登入失敗', 'alert-error')
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
 
 function demo() {
   const demoUser = {
     displayName: 'demo',
     email: 'demo',
-    photoURL: '/logo.png',
+    photoURL: '/static/logo.png',
     uid: 'demo',
   }
   const demoUserdata = {
@@ -95,11 +94,21 @@ function demo() {
   sessionStorage.setItem('annoucements', JSON.stringify(demoAnnoucements))
   router.push({ name: 'profile' })
 }
+
+// toast
+const toastRef = ref(null)
+function showToast(msg, type) {
+  toastRef.value.showToast(msg, type)
+}
 </script>
 
 <template>
+  <toast ref="toastRef"/>
   <div class="flex flex-col justify-center gap-3">
-    <button type="button" class="btn btn-primary mx-2" @click="signinRedirect()"><googleicon />SignIn with Google</button>
-    <button type="button"  class="btn btn-secondary mx-2" @click="demo">Try Demo</button>
+    <button type="button" class="btn btn-primary mx-2" @click="signInPopup()" :disabled="loading">
+      <googleicon />SignIn with Google
+      <span class="loading loading-spinner loading-sm" v-if="loading"></span>
+    </button>
+    <button type="button"  class="btn btn-secondary mx-2" @click="demo" :disabled="loading">Try Demo</button>
   </div>
 </template>

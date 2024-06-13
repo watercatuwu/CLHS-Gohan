@@ -7,13 +7,15 @@
         </div>
       </Transition>
     </router-view>
-    <bottomnav v-show="route.name !== 'index'"  />
+    <bottomnav v-show="!navDisabledPages.includes(route.name)"  />
   </div>
 </template>
 
 <script setup>
 import { useRoute, RouterView } from 'vue-router'
 import bottomnav from './components/widgets/bottomnav.vue';
+
+const navDisabledPages = ['index', '404'];
 
 const route = useRoute();
 </script>

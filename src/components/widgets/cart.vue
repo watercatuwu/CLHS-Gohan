@@ -2,10 +2,10 @@
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <h2 class="card-title text-xl"><carticon />購物車<span class="badge badge-primary">{{Object.keys(cart).length}}</span></h2>
-            <div v-if="Object.keys(cart).length > 0" class="overflow-x-auto">
+            <div v-if="Object.keys(cart).length > 0" class="overflow-auto max-h-96">
                 <table class="table table-zebra">
                   <thead>
-                    <tr>
+                    <tr class="sticky top-0 bg-base-200">
                       <th></th>
                       <th>Name</th>
                       <th>Price</th>
@@ -18,14 +18,14 @@
                       <td>{{product.name}}</td>
                       <td>{{product.price}}</td>
                       <td>
-                        <button @click="removeFromCart(index)"  class="btn btn-error btn-xs">移除</button>
+                        <button @click="removeFromCart(index)"  class="btn btn-error btn-xs whitespace-nowrap">移除</button>
                       </td>
                     </tr>
-                    <tr>
-                        <th></th>
-                        <td>總計</td>
-                        <td>{{priceSum(cart)}}</td>
-                        <td></td>
+                    <tr class="sticky bottom-0 bg-base-200">
+                      <th></th>
+                      <td>總計</td>
+                      <td>{{priceSum(cart)}}</td>
+                      <td></td>
                     </tr>
                   </tbody>
                 </table>
@@ -56,7 +56,7 @@
                       <td>{{product.name}}</td>
                       <td>{{product.price}}</td>
                       <td>
-                        <button @click="addToCart(product)" :disabled="isFormClosed"  class="btn btn-secondary btn-sm text-xs">加入</button>
+                        <button @click="addToCart(product)" :disabled="isFormClosed" class="btn btn-secondary btn-sm whitespace-nowrap">加入</button>
                       </td>
                     </tr>
                   </tbody>
@@ -142,14 +142,14 @@ const getFirestore = async (collectionRef, docid) => {
   return docsnap.data()
 }
 
+//如果沒有Product資料就抓取資料
 if (Object.keys(products.value).length === 0) {
   const weekinyear = now.year.toString()+now.weekNumber.toString()
   getFirestore(menuRef,weekinyear)
   .then(data => {
-    //const weekday = now.hour>13 ? now.plus({days: 1}).setLocale('en').weekdayShort.toLowerCase() : now.setLocale('en').weekdayShort.toLowerCase()
-    const weekday = 'tue'
+    const weekday = now.hour>13 ? now.plus({days: 1}).setLocale('en').weekdayShort.toLowerCase() : now.setLocale('en').weekdayShort.toLowerCase()
     //設定表單更新時間
-    const result = data[weekday]
+    const result = setComboMeal(data[weekday])
     sessionStorage.setItem('products', JSON.stringify(result))
     console.log(result)
     isDataGet.value = true
@@ -167,7 +167,7 @@ const addToCart = (product) => {
       product.addrice = false
     }
     const cloneProduct = JSON.parse(JSON.stringify(product)) //deepclone
-    cart.value.push(cloneProduct)
+    cart.value.unshift(cloneProduct) //將元素新增至首位
     sessionStorage.setItem('cart', JSON.stringify(cart.value))
 }
 
@@ -195,7 +195,7 @@ const checkoutsend = () => {
     showToast('請先登入', 'alert-error')
   }else{
   const now = DateTime.now().setZone('Asia/Taipei')
-  const ISOstring = now.toISODate()
+  const ISOstring = now.hour>13 ? now.plus({days: 1}).toISODate() : now.toISODate()
   const data = {
     [uid]: {
       "class": JSON.parse(sessionStorage.getItem('userdata')).class,
@@ -206,7 +206,7 @@ const checkoutsend = () => {
     }
   }
   const docRef = doc(ordersRef, ISOstring)
-  setDoc(docRef, data, {merge: true})
+  setDoc(docRef, data, { merge: true })
     .then(() => {
       showToast('結帳成功', 'alert-success')
       clearCart()
@@ -218,7 +218,7 @@ const checkoutsend = () => {
 }
 
 const choosebot = () => {
-  const main = products.value.data[getRandom(0,10)]
+  const main = products.value.data[getRandom(0,products.value.data.length)]
   addToCart(main)
 }
 
@@ -228,6 +228,24 @@ function showToast(msg, type) {
 }
 
 //tools
+
+const setComboMeal = (menu) =>{
+  const fastfood = menu.data.slice(-6,-3)
+  const drink = menu.data.slice(-3)
+
+  fastfood.forEach((elementA) => {
+    drink.forEach((elementB) => {
+      menu.data.push({
+        code:elementA.code + elementB.code,
+        name:elementA.name + '+' +elementB.name,
+        price:elementA.price + elementB.price - 5
+      })
+    })
+  })
+
+  console.log(menu)
+  return menu
+}
 const priceSum = (arr) =>{
     let sum = 0
     for (let i = 0; i < arr.length; i++) {
