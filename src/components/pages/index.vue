@@ -1,6 +1,6 @@
 <template>
-  <div class="hero min-h-[100dvh] bg-base-100">
-        <div class="hero min-h-screen backdrop-blur-sm">
+  <div id="main" class="hero min-h-[100dvh] bg-base-100">
+        <div class="hero min-h-screen backdrop-brightness-50">
         <div class="hero-content text-center">
           <div class="max-w-md">
             <div class="avatar">
@@ -39,4 +39,12 @@ import login from "@/components/widgets/login.vue";
 import feature from "@/components/widgets/feature.vue";
 import about from "@/components/widgets/about.vue";
 import roadmap from "@/components/widgets/roadmap.vue";
+
+import { onMounted } from 'vue'
+
+onMounted(() => {
+  const imgurl = localStorage.getItem('imgurl')
+  const app = document.querySelector('#main')
+  app.style.backgroundImage = `url(${imgurl})`
+})
 </script>

@@ -166,11 +166,10 @@ const getFirestore = async (collectionRef, docid) => {
 
 const cancelOrders = () => {
   try{
-    const ISOstring = now.toISODate()
     cantCancel.value = true
     sessionStorage.removeItem('orders')
     orders.value = {}
-    updateDoc(doc(ordersRef, ISOstring), {[uid]: deleteField()})
+    updateDoc(doc(ordersRef, dayselect.value.toISODate()), {[uid]: deleteField()})
     showToast('已取消訂單', 'alert-success')
   }catch(error){
      console.error(error)

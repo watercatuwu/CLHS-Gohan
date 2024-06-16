@@ -60,7 +60,7 @@ const themelist = [
 ]
 
 const imgurl = ref(localStorage.getItem('imgurl')||'')
-const cardopacity = ref(parseInt(localStorage.getItem('cardopacity'))||80)
+const cardopacity = ref(parseInt(localStorage.getItem('cardopacity'))||50)
 const showbgmodal = () => {
     document.getElementById('bgmodal').showModal()
 }
