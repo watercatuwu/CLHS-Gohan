@@ -1,6 +1,8 @@
 # LunCLHS Next
 
-美觀實用的中壢高中午餐訂餐系統
+非官方中壢高中午餐訂餐系統
+
+注意：本系統並無與熱食部連動，僅供事務統計使用。
 
 ## 預覽
 ![shop](https://cdn.jsdelivr.net/gh/watercatuwu/picx-images-hosting@master/shop.png)
