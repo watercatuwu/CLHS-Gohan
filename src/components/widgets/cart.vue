@@ -1,11 +1,20 @@
 <template>
+  <div class="card bg-base-200 shadow-md border-gray-400">
+    <div class="card-body">
+      <div class="flex flex-row justify-between items-center">
+        <button @click="switchday('prev')"  class="btn btn-neutral btn-sm"><<</button>
+        <h2 class="text-xl font-bold">{{ dayselect.setLocale('zh-tw').toFormat('MM-dd ccc') }}</h2>
+        <button @click="switchday('next')" class="btn btn-neutral btn-sm">>></button>
+      </div>
+    </div>
+  </div>
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <h2 class="card-title text-xl"><carticon />購物車<span class="badge badge-primary">{{Object.keys(cart).length}}</span></h2>
             <div v-if="Object.keys(cart).length > 0" class="overflow-auto max-h-96">
-                <table class="table table-zebra">
+                <table class="table">
                   <thead>
-                    <tr class="sticky top-0 bg-base-200">
+                    <tr class="sticky top-0 bg-base-200 border-0">
                       <th></th>
                       <th>Name</th>
                       <th>Price</th>
@@ -13,7 +22,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(product, index) in cart">
+                    <tr v-for="(product, index) in cart" class="border-0">
                       <th>{{product.code}}</th>
                       <td>{{product.name}}</td>
                       <td>{{product.price}}</td>
@@ -41,9 +50,9 @@
             <h2 class="card-title text-xl"><shopicon />商品</h2>
             <h2 v-if="isDataGet && !products.isOpened" class="card-title text-xl">本日放假</h2>
             <div v-if="isDataGet && products.isOpened" class="overflow-x-auto">
-                <table class="table table-zebra">
+                <table class="table">
                   <thead>
-                    <tr>
+                    <tr class="border-0">
                       <th></th>
                       <th>Name</th>
                       <th>Price</th>
@@ -51,7 +60,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="product in products.data">
+                    <tr v-for="product in products.data" class="border-0">
                       <th>{{product.code}}</th>
                       <td>{{product.name}}</td>
                       <td>{{product.price}}</td>
@@ -98,7 +107,7 @@
           </table>
           <select v-model="payment" class="select select-bordered w-full mt-4">
               <option value="" disabled selected>請選擇付款方式</option>
-              <option value="onclass">事務股長</option>
+              <option value="onclass">現金支付</option>
               <!--<option value="wallet" disabled>線上錢包</option>-->
           </select>
       </div>
@@ -125,16 +134,67 @@ import axios from 'axios'
 import { DateTime } from 'luxon'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { menuRef, ordersRef } from '@/firebase'
+import { getRandom, priceSum } from '@/utils/utils'
+
+
 import toast from '@/components/widgets/toast.vue'
 
 const cart = ref(JSON.parse(sessionStorage.getItem('cart')) || [])
-const products = ref(JSON.parse(sessionStorage.getItem('products')) || {})
 const payment = ref('')
 const isDataGet = ref(false)
 
 const isFormClosed = ref(false)
 const now = DateTime.now().setZone('Asia/Taipei')
+const sysNow = now.hour>=13 ? now.plus({days: 1}) : now
+
 isFormClosed.value =  now.hour < 13 && now.hour > 10 ? true : false
+
+const dayselect = ref()
+const dayselectStroge = JSON.parse(sessionStorage.getItem('dayselect'))
+if(dayselectStroge){
+  dayselect.value = DateTime.fromISO(dayselectStroge) //透過儲存的iso字串轉換為DateTime物件
+}else{
+  dayselect.value = sysNow
+}
+const products = ref(JSON.parse(sessionStorage.getItem(`menu${dayselect.value.toISODate()}`)) || {})
+
+const switchday = (type) => {
+  clearCart()
+  if (type === 'prev' && dayselect.value.toISODate() > sysNow.toISODate()) {
+    dayselect.value = dayselect.value.minus({days: 1})
+  }
+  if(type === 'next' && dayselect.value.toISODate() < sysNow.endOf('week').toISODate()) {
+    dayselect.value = dayselect.value.plus({days: 1})
+  }
+
+  //for dev
+  /*
+  if (type === 'prev') {
+    dayselect.value = dayselect.value.minus({days: 1})
+  }
+  if(type === 'next') {
+    dayselect.value = dayselect.value.plus({days: 1})
+  }
+  */
+
+  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate())) //儲存為iso字串
+  const menuStorage = sessionStorage.getItem(`menu${dayselect.value.toISODate()}`)
+  if (menuStorage) {
+    products.value = JSON.parse(menuStorage)
+    isDataGet.value = true
+  }else{
+    getFirestore(menuRef, dayselect.value.toISODate())
+    .then(data => {
+      const result = setComboMeal(data)
+      sessionStorage.setItem(`menu${dayselect.value.toISODate()}`, JSON.stringify(result))
+      isDataGet.value = true
+      products.value = result
+    })
+    .catch(error => {
+      console.error('There was a problem with the fetch operation:', error)
+    })
+  }
+}
 
 const getFirestore = async (collectionRef, docid) => {
   const docRef = doc(collectionRef, docid)
@@ -144,31 +204,28 @@ const getFirestore = async (collectionRef, docid) => {
 
 //如果沒有Product資料就抓取資料
 if (Object.keys(products.value).length === 0) {
-  const weekinyear = now.year.toString()+now.weekNumber.toString()
-  getFirestore(menuRef,weekinyear)
+  getFirestore(menuRef, sysNow.toISODate())
   .then(data => {
-    const weekday = now.hour>13 ? now.plus({days: 1}).setLocale('en').weekdayShort.toLowerCase() : now.setLocale('en').weekdayShort.toLowerCase()
-    //設定表單更新時間
-    const result = setComboMeal(data[weekday])
-    sessionStorage.setItem('products', JSON.stringify(result))
+    const result = setComboMeal(data)
+    sessionStorage.setItem(`menu${sysNow.toISODate()}`, JSON.stringify(result))
     console.log(result)
     isDataGet.value = true
     products.value = result
-})
-.catch(error => {
-  console.error('There was a problem with the fetch operation:', error)
-})
+  })
+  .catch(error => {
+    console.error('There was a problem with the fetch operation:', error)
+  })
 }else{
   isDataGet.value = true
 }
 
 const addToCart = (product) => {
-    if(Number.isInteger(product.code)){
-      product.addrice = false
-    }
-    const cloneProduct = JSON.parse(JSON.stringify(product)) //deepclone
-    cart.value.unshift(cloneProduct) //將元素新增至首位
-    sessionStorage.setItem('cart', JSON.stringify(cart.value))
+  if(Number.isInteger(product.code)){
+    product.addrice = false
+  }
+  const cloneProduct = JSON.parse(JSON.stringify(product)) //deepclone
+  cart.value.unshift(cloneProduct) //將元素新增至首位
+  sessionStorage.setItem('cart', JSON.stringify(cart.value))
 }
 
 const removeFromCart = (index) => {
@@ -185,8 +242,8 @@ const checkout = () => {
 }
 
 const clearCart = () => {
-    cart.value = []
-    sessionStorage.removeItem('cart')
+  cart.value = []
+  sessionStorage.removeItem('cart')
 }
 
 const checkoutsend = () => {
@@ -194,8 +251,6 @@ const checkoutsend = () => {
   if (uid === "demo") {
     showToast('請先登入', 'alert-error')
   }else{
-  const now = DateTime.now().setZone('Asia/Taipei')
-  const ISOstring = now.hour>13 ? now.plus({days: 1}).toISODate() : now.toISODate()
   const data = {
     [uid]: {
       "class": JSON.parse(sessionStorage.getItem('userdata')).class,
@@ -205,7 +260,7 @@ const checkoutsend = () => {
       "isPay": false
     }
   }
-  const docRef = doc(ordersRef, ISOstring)
+  const docRef = doc(ordersRef, dayselect.value.toISODate())
   setDoc(docRef, data, { merge: true })
     .then(() => {
       showToast('結帳成功', 'alert-success')
@@ -222,14 +277,11 @@ const choosebot = () => {
   addToCart(main)
 }
 
-const toastRef = ref(null)
-function showToast(msg, type) {
-  toastRef.value.showToast(msg, type)
-}
-
-//tools
-
 const setComboMeal = (menu) =>{
+  if (!menu.isOpened) {
+    return menu
+  }
+
   const fastfood = menu.data.slice(-6,-3)
   const drink = menu.data.slice(-3)
 
@@ -243,18 +295,12 @@ const setComboMeal = (menu) =>{
     })
   })
 
-  console.log(menu)
   return menu
 }
-const priceSum = (arr) =>{
-    let sum = 0
-    for (let i = 0; i < arr.length; i++) {
-        sum += arr[i].price
-    }
-    return sum
-}
 
-const getRandom = (min,max) => {
-    return Math.floor(Math.random()*max)+min
+// toast
+const toastRef = ref(null)
+function showToast(msg, type) {
+  toastRef.value.showToast(msg, type)
 }
 </script>

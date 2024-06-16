@@ -1,13 +1,13 @@
 <template>
     <div id="main" class="bg-fixed bg-center bg-cover min-h-[100dvh]">
         <div class="container mx-auto p-2 pb-24 space-y-2">
-            <annouce />
+            <order />
         </div>
     </div>
 </template>
 
 <script setup>
-import annouce from '@/components/widgets/annouce.vue';
+import order from '@/components/widgets/order.vue'
 
 import { onMounted } from 'vue'
 

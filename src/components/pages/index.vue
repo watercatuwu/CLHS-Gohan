@@ -9,7 +9,7 @@
               </div>
             </div>
             <h1 class="text-4xl font-bold">LunCLHS NEXT</h1>
-            <p class="my-4">簡潔、迅速、美觀的中壢高中點餐系統</p>
+            <p class="my-4">非官方壢中熱食部點餐系統</p>
             <login />
             <div class="my-4">
               <a href="https://github.com/watercatuwu/lunclhsnext/blob/main/privacy.md" class="link">隱私權政策</a>

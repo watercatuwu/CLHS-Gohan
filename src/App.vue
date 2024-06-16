@@ -13,6 +13,7 @@
 
 <script setup>
 import { useRoute, RouterView } from 'vue-router'
+import { ref } from 'vue'
 import bottomnav from './components/widgets/bottomnav.vue';
 
 const navDisabledPages = ['index', '404'];

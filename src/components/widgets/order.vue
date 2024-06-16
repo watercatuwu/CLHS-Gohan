@@ -1,4 +1,13 @@
 <template>
+  <div class="card bg-base-200 shadow-md border-gray-400">
+    <div class="card-body">
+      <div class="flex flex-row justify-between items-center">
+        <button @click="switchday('prev')"  class="btn btn-neutral btn-sm"><<</button>
+        <h2 class="text-xl font-bold">{{ dayselect.setLocale('zh-tw').toFormat('MM-dd ccc') }}</h2>
+        <button @click="switchday('next')" class="btn btn-neutral btn-sm">>></button>
+      </div>
+    </div>
+  </div>
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <div class="flex justify-between">
@@ -8,10 +17,10 @@
               </h2>
             </div>
             <div class="overflow-x-auto max-h-72">
-                <table v-if="Object.keys(orders).length > 0" class="table table-zebra">
+                <table v-if="Object.keys(orders).length > 0" class="table">
                   <!-- head -->
                   <thead>
-                    <tr>
+                    <tr class="border-0">
                       <th></th>
                       <th>Name</th>
                       <th>Price</th>
@@ -19,7 +28,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(order, index) in orders.order">
+                    <tr v-for="(order, index) in orders.order" class="border-0">
                       <th>{{index+1}}</th>
                       <td>{{order.name}}</td>
                       <td>{{order.price}}</td>
@@ -58,28 +67,66 @@ const now = DateTime.now().setZone('Asia/Taipei')
 const cantCancel = ref(true)
 cantCancel.value =  now.hour < 13 && now.hour > 10 ? true : false
 
-const orders = ref(JSON.parse(sessionStorage.getItem('orders')) || {})
+const sysNow = now.hour>=13 ? now.plus({days: 1}) : now
+const dayselect = ref()
+const dayselectStroge = JSON.parse(sessionStorage.getItem('dayselect'))
+if(dayselectStroge){
+  dayselect.value = DateTime.fromISO(dayselectStroge) //透過儲存的iso字串轉換為DateTime物件
+}else{
+  dayselect.value = sysNow
+}
+
+const orders = ref(JSON.parse(sessionStorage.getItem(`order${dayselect.value.toISODate()}`)) || {})
 const badge = ref('')
 const badgeMsg = ref('')
 const uid = JSON.parse(sessionStorage.getItem('currentUser')).uid
 
+const switchday = (type) => {
+
+  if (type === 'prev' && dayselect.value.toISODate() > sysNow.toISODate()) {
+    dayselect.value = dayselect.value.minus({days: 1})
+  }
+  if(type === 'next' && dayselect.value.toISODate() < sysNow.endOf('week').toISODate()) {
+    dayselect.value = dayselect.value.plus({days: 1})
+  }
+
+  //for dev
+  /*
+  if (type === 'prev') {
+    dayselect.value = dayselect.value.minus({days: 1})
+  }
+  if(type === 'next') {
+    dayselect.value = dayselect.value.plus({days: 1})
+  }
+  */
+
+  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate())) //儲存為iso字串
+  const orderStorage = sessionStorage.getItem(`order${dayselect.value.toISODate()}`)
+  console.log(orderStorage)
+  if (orderStorage) {
+    orders.value = JSON.parse(orderStorage)
+    cantCancel.value = false
+  }else{
+    fetchOrders()
+  }
+}
+
 async function fetchOrders() {
   try {
-    const now = DateTime.now().setZone('Asia/Taipei')
-    const ISOstring = now.hour>13 ? now.plus({days: 1}).toISODate() : now.toISODate()
-    console.log(ISOstring)
-    const docRef = doc(ordersRef, ISOstring)
+    const docRef = doc(ordersRef, dayselect.value.toISODate())
     const docSnap = await getDoc(docRef)
     const data = docSnap.data()
     if (!data) {
       showToast('無點餐紀錄', 'alert-error')
       cantCancel.value = true
+      orders.value = {}
       return //中止function
     }
     const uidData = data[uid]
     if (uidData) {
-        sessionStorage.setItem('orders', JSON.stringify(uidData))
+        sessionStorage.setItem(`order${dayselect.value.toISODate()}`, JSON.stringify(uidData))
         orders.value = uidData
+        cantCancel.value = false
         console.log(uidData)
       if (uidData.isPay) {
         badge.value = 'badge-success'

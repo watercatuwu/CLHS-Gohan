@@ -6,7 +6,6 @@
                 <li class="step step-primary">開發階段</li>
                 <li class="step step-primary">測試階段</li>
                 <li class="step">正式上線</li>
-                <li class="step">開源</li>
             </ul>
         </div>
     </div>

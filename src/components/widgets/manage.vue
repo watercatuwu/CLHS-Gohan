@@ -91,7 +91,7 @@ const fetchDatas = async () => {
   try {
     const clas = JSON.parse(sessionStorage.getItem('userdata')).class
     const now = DateTime.now().setZone('Asia/Taipei')
-    const ISOstring = now.hour>13 ? now.plus({days: 1}).toISODate() : now.toISODate()
+    const ISOstring = now.hour>=13 ? now.plus({days: 1}).toISODate() : now.toISODate()
     getFirestore(ordersRef, ISOstring)
     .then(data => {
       for (const key in data) {

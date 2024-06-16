@@ -1,6 +1,18 @@
 import daisyui from "daisyui"
 export default {
   content: ['./index.html','./src/**/*.{vue,js,ts}'],
+  safelist:[
+    'bg-opacity-10',
+    'bg-opacity-20',
+    'bg-opacity-30',
+    'bg-opacity-40',
+    'bg-opacity-50',
+    'bg-opacity-60',
+    'bg-opacity-70',
+    'bg-opacity-80',
+    'bg-opacity-90',
+    'bg-opacity-100',
+  ],
   theme: {
     extend: {},
   },

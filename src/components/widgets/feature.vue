@@ -7,10 +7,6 @@
             <p class="text-lg">隨時線上瀏覽菜單，方便快捷，無需翻閱紙本菜單。</p>
           </div>
           <div>
-            <h2 class="text-2xl font-bold flex items-center"><carticon />線上結帳</h2>
-            <p class="text-lg">輕鬆透過系統完成結帳，免去排隊付款的麻煩。</p>
-          </div>
-          <div>
             <h2 class="text-2xl font-bold flex items-center"><receipticon />查看訂單狀態</h2>
             <p class="text-lg">隨時掌握訂單進度，方便管理訂單。</p>
           </div>
