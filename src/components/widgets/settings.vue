@@ -16,7 +16,7 @@
                         <div class="modal-box space-y-2">
                             <h3 class="font-bold text-lg">輸入圖片網址</h3>
                             <label class="input input-bordered flex items-center gap-2">
-                                <input v-model="imgurl" type="text" placeholder="Type here" class="grow" />
+                                <input v-model="imgurl" type="url" placeholder="Paste url here" class="grow" />
                                 <button @click="imgurl=''"><trashbinicon /></button>
                             </label>
                             <h3 class="font-bold text-lg">卡片透明度</h3>
@@ -25,7 +25,7 @@
                                 <span class="mx-4">{{ cardopacity }}</span>
                             </div>
                             <div class="modal-action">
-                                <form method="dialog">
+                                <form method="dialog" class="space-x-2">
                                     <button class="btn">關閉</button>
                                     <button @click="setbg" class="btn btn-success">送出</button>
                                 </form>
@@ -35,12 +35,17 @@
                 </div>
         </div>
       </div>
+      <toast ref="toastRef"/>
 </template>
 <script setup>
 import settingsicon from '@/assets/icons/settings.svg'
 import trashbinicon from '@/assets/icons/trashbin.svg'
+import toast from '@/components/widgets/toast.vue'
 
 import { ref } from 'vue'
+import { checkImage } from '@/utils/utils.js'
+
+const toastRef = ref(null)
 
 const setTheme = (theme) => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -48,15 +53,12 @@ const setTheme = (theme) => {
 }
 
 const themelist = [
-    'Default',
-    "winter",
-    "lofi",
-    "black",
-    "valentine",
-    "cupcake",
-    "bumblebee",
+    'Husky',
+    'Mocha',
     'Cappuccino',
-    'Mocha'
+    "winter",
+    'Default',
+    "valentine",
 ]
 
 const imgurl = ref(localStorage.getItem('imgurl')||'')
@@ -66,6 +68,7 @@ const showbgmodal = () => {
 }
 
 const setbg = () => {
+    console.log(checkImage(imgurl.value))
     localStorage.setItem('imgurl', imgurl.value)
     localStorage.setItem('cardopacity', cardopacity.value)
     const app = document.querySelector('#main')

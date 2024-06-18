@@ -40,7 +40,7 @@
                 </table>
             </div>
             <button v-show="isFormClosed || !products.isOpened" disabled class="btn btn-neutral" >表單已截止</button>
-            <button v-show="!isFormClosed && products.isOpened" @click="choosebot" class="btn btn-neutral" >選擇困難小幫手</button>
+            <button v-show="!isFormClosed && products.isOpened" @click="choosebot" class="btn btn-accent" >選擇困難小幫手</button>
             <button v-show="Object.keys(cart).length > 0" @click="checkout" class="btn btn-primary" >結帳</button>
             <button v-show="Object.keys(cart).length > 0" @click="clearCart" class="btn btn-error" >清空購物車</button>
         </div>
@@ -129,7 +129,7 @@
 import carticon from '@/assets/icons/cart.svg'
 import shopicon from '@/assets/icons/shopping.svg'
 
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { DateTime } from 'luxon'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
@@ -157,6 +157,24 @@ if(dayselectStroge){
   dayselect.value = sysNow
 }
 const products = ref(JSON.parse(sessionStorage.getItem(`menu${dayselect.value.toISODate()}`)) || {})
+
+onMounted(() => {
+  if (Object.keys(products.value).length === 0) {
+  getFirestore(menuRef, sysNow.toISODate())
+  .then(data => {
+    const result = setComboMeal(data)
+    sessionStorage.setItem(`menu${sysNow.toISODate()}`, JSON.stringify(result))
+    console.log(result)
+    isDataGet.value = true
+    products.value = result
+  })
+  .catch(error => {
+    console.error('There was a problem with the fetch operation:', error)
+  })
+  }else{
+    isDataGet.value = true
+  }
+})
 
 const switchday = (type) => {
   clearCart()
@@ -200,23 +218,6 @@ const getFirestore = async (collectionRef, docid) => {
   const docRef = doc(collectionRef, docid)
   const docsnap = await getDoc(docRef)
   return docsnap.data()
-}
-
-//如果沒有Product資料就抓取資料
-if (Object.keys(products.value).length === 0) {
-  getFirestore(menuRef, sysNow.toISODate())
-  .then(data => {
-    const result = setComboMeal(data)
-    sessionStorage.setItem(`menu${sysNow.toISODate()}`, JSON.stringify(result))
-    console.log(result)
-    isDataGet.value = true
-    products.value = result
-  })
-  .catch(error => {
-    console.error('There was a problem with the fetch operation:', error)
-  })
-}else{
-  isDataGet.value = true
 }
 
 const addToCart = (product) => {

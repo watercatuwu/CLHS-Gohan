@@ -36,14 +36,11 @@ const setTheme = (theme) => {
 }
 
 const themelist = [
-    'Default',
-    "winter",
-    "lofi",
-    "black",
-    "valentine",
-    "cupcake",
-    "bumblebee",
+    'Husky',
+    'Mocha',
     'Cappuccino',
-    'Mocha'
+    "winter",
+    'Default',
+    "valentine",
 ]
 </script>

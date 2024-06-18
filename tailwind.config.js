@@ -2,6 +2,7 @@ import daisyui from "daisyui"
 export default {
   content: ['./index.html','./src/**/*.{vue,js,ts}'],
   safelist:[
+    'bg-opacity-0',
     'bg-opacity-10',
     'bg-opacity-20',
     'bg-opacity-30',
@@ -20,11 +21,7 @@ export default {
     themes: [
       "dark",
       "winter",
-      "lofi",
-      "black",
       "valentine",
-      "cupcake",
-      "bumblebee",
       {"Cappuccino": {
         'primary' : '#4b3832',
         'primary-focus' : '#29211e',
@@ -101,7 +98,47 @@ export default {
         '--btn-text-case': 'lowercase',
         '--navbar-padding': '.5rem',
         '--border-btn': '1px',
-      }}
+      }},
+      {
+        'Husky': {
+           'primary' : '#BFE2FF',
+           'primary-focus' : '#a9c7df',
+           'primary-content' : '#0A131A',
+
+           'secondary' : '#122031',
+           'secondary-focus' : '#1d2e44',
+           'secondary-content' : '#cdd6f4',
+
+           'accent' : '#c26251',
+           'accent-focus' : '#b0544a',
+           'accent-content' : '#122031',
+
+           'neutral' : '#1f2323',
+           'neutral-focus' : '#31393a',
+           'neutral-content' : '#bac2de',
+
+           'base-100' : '#13232f',
+           'base-200' : '#0A131A',
+           'base-300' : '#00010D',
+           'base-content' : '#cdd6f4',
+
+           'info' : '#95dcea',
+           'success' : '#35c06a',
+           'warning' : '#c5e137',
+           'error' : '#ec3266',
+
+          '--rounded-box': '.75rem',
+          '--rounded-btn': '.75rem',
+          '--rounded-badge': '.5rem',
+
+          '--animation-btn': '.25s',
+          '--animation-input': '.2s',
+
+          '--btn-text-case': 'lowercase',
+          '--navbar-padding': '.5rem',
+          '--border-btn': '1px',
+        },
+      },
     ],
   },
   plugins: [daisyui],

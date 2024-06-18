@@ -9,3 +9,7 @@ export function priceSum(arr){
 export function getRandom(min,max){
     return Math.floor(Math.random()*max)+min
 }
+
+export function checkImage(url) {
+  return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+}
