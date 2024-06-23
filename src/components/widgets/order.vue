@@ -13,10 +13,11 @@
             <div class="flex justify-between">
               <h2 class="card-title text-xl">
                 <receipticon /> 我的訂單
-                <!--<span class="badge text-base" :class="[badge]">{{badgeMsg}}</span>-->
               </h2>
             </div>
+            <transition name="fade" mode="out-in">
             <div class="overflow-x-auto max-h-72">
+                <div v-if="Object.keys(orders).length === 0" class="card-title text-xl">無訂單</div>
                 <table v-if="Object.keys(orders).length > 0" class="table">
                   <!-- head -->
                   <thead>
@@ -28,7 +29,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(order, index) in orders.order" class="border-0">
+                    <tr v-for="(order, index) in orders" class="border-0">
                       <th>{{index+1}}</th>
                       <td>{{order.name}}</td>
                       <td>{{order.price}}</td>
@@ -37,13 +38,14 @@
                     <tr class="sticky bottom-0 bg-base-200">
                       <th></th>
                       <td>總計</td>
-                      <td>{{priceSum(orders.order)}}</td>
+                      <td>{{priceSum(orders)}}</td>
                       <td></td>
                     </tr>
                   </tbody>
                 </table>
             </div>
-            <div v-if="uid!=='demo'" class="card-actions justify-end mt-2">
+            </transition>
+            <div class="card-actions justify-end mt-2">
               <button @click="fetchOrders" class="btn btn-secondary btn-sm mx-1">重新整理</button>
               <button @click="cancelOrders" :disabled="orders.isPay || cantCancel" class="btn btn-error btn-sm mx-1">取消訂單</button>
             </div>
@@ -57,9 +59,8 @@ import receipticon from '@/assets/icons/receipt.svg'
 import checkcircleicon from '@/assets/icons/check-circle.svg'
 
 import { ref, onMounted } from 'vue'
-import { doc, getDoc, setDoc, updateDoc, deleteField } from 'firebase/firestore'
-import { ordersRef } from '@/firebase'
 import { DateTime } from 'luxon'
+import { supabase } from '@/supabase'
 
 import toast from '@/components/widgets/toast.vue'
 
@@ -70,111 +71,74 @@ cantCancel.value =  now.hour < 13 && now.hour > 10 ? true : false
 const sysNow = now.hour>=13 ? now.plus({days: 1}) : now
 const dayselect = ref()
 const dayselectStroge = JSON.parse(sessionStorage.getItem('dayselect'))
+
 if(dayselectStroge){
   dayselect.value = DateTime.fromISO(dayselectStroge) //透過儲存的iso字串轉換為DateTime物件
 }else{
   dayselect.value = sysNow
 }
 
-const orders = ref(JSON.parse(sessionStorage.getItem(`order${dayselect.value.toISODate()}`)) || {})
-const badge = ref('')
-const badgeMsg = ref('')
-const uid = JSON.parse(sessionStorage.getItem('currentUser')).uid
+const orders = ref({})
 
-const switchday = (type) => {
-
+const switchday = async(type) => {
+  /*
   if (type === 'prev' && dayselect.value.toISODate() > sysNow.toISODate()) {
     dayselect.value = dayselect.value.minus({days: 1})
   }
   if(type === 'next' && dayselect.value.toISODate() < sysNow.endOf('week').toISODate()) {
     dayselect.value = dayselect.value.plus({days: 1})
   }
+  */
 
   //for dev
-  /*
   if (type === 'prev') {
     dayselect.value = dayselect.value.minus({days: 1})
   }
   if(type === 'next') {
     dayselect.value = dayselect.value.plus({days: 1})
   }
-  */
 
   sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate())) //儲存為iso字串
-  const orderStorage = sessionStorage.getItem(`order${dayselect.value.toISODate()}`)
-  console.log(orderStorage)
-  if (orderStorage) {
-    orders.value = JSON.parse(orderStorage)
-    cantCancel.value = false
-  }else{
-    fetchOrders()
-  }
+  await fetchOrders()
 }
 
 async function fetchOrders() {
-  try {
-    const docRef = doc(ordersRef, dayselect.value.toISODate())
-    const docSnap = await getDoc(docRef)
-    const data = docSnap.data()
-    if (!data) {
-      showToast('無點餐紀錄', 'alert-error')
+  const userData = JSON.parse(sessionStorage.getItem('userData'))
+  const { data, error } = await supabase.from('orders').select('*')
+  .eq('date', dayselect.value.toISODate())
+  .eq('uuid', userData.auth.id)
+  .single()
+  if (error) {
+    console.log(error)
+    if (error.code ==='PGRST116'){
+      showToast('無訂單', 'alert-error')
       cantCancel.value = true
       orders.value = {}
-      return //中止function
     }
-    const uidData = data[uid]
-    if (uidData) {
-        sessionStorage.setItem(`order${dayselect.value.toISODate()}`, JSON.stringify(uidData))
-        orders.value = uidData
-        cantCancel.value = false
-        console.log(uidData)
-      if (uidData.isPay) {
-        badge.value = 'badge-success'
-        badgeMsg.value = '已付款'
-      }else{
-        badge.value = 'badge-error'
-        badgeMsg.value = '未付款'
-      }
-    }else{
-      cantCancel.value = true
-      showToast('無點餐紀錄', 'alert-error')
-    }
-  } catch (error) {
-    console.error('There was a problem with the fetch operation:', error)
-    showToast(error, 'alert-error')
+    return
   }
+  console.log(data)
+  cantCancel.value = false
+  orders.value = data.order
 }
 
-onMounted(() => {
+onMounted(async() => {
   if (Object.keys(orders.value).length === 0) {
-    fetchOrders()
-  }
-  if (orders.value.isPay) {
-    badge.value = 'badge-success'
-    badgeMsg.value = '已付款'
-  }else{
-    badge.value = 'badge-error'
-    badgeMsg.value = '未付款'
+    await fetchOrders()
   }
 })
 
-const getFirestore = async (collectionRef, docid) => {
-  const docRef = doc(collectionRef, docid)
-  const docsnap = await getDoc(docRef)
-  return docsnap.data()
-}
-
-const cancelOrders = () => {
-  try{
+const cancelOrders = async () => {
+    const userData = JSON.parse(sessionStorage.getItem('userData'))
     cantCancel.value = true
-    sessionStorage.removeItem('orders')
     orders.value = {}
-    updateDoc(doc(ordersRef, dayselect.value.toISODate()), {[uid]: deleteField()})
-    showToast('已取消訂單', 'alert-success')
-  }catch(error){
-     console.error(error)
+    const { error } = await supabase.from('orders').delete().eq('id', dayselect.value.toISODate()+'-'+userData.auth.id)
+  if(error){
+    console.error(error)
     showToast(error, 'alert-error')
+    return
   }
+  showToast('已取消訂單', 'alert-success')
 }
 
 const toastRef = ref(null)

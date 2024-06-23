@@ -13,6 +13,9 @@ export default {
     'bg-opacity-80',
     'bg-opacity-90',
     'bg-opacity-100',
+    'backdrop-brightness-50',
+    'backdrop-brightness-75',
+    'backdrop-brightness-100',
   ],
   theme: {
     extend: {},

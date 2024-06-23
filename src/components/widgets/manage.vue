@@ -1,7 +1,8 @@
 <template>
     <div class="card bg-base-200 shadow-md border-gray-400">
-        <div class="card-body">
-        <div class="stats stats-vertical lg:stats-horizontal bg-base-200">
+      <figure class="w-full h-3 bg-primary"></figure>
+      <div class="card-body">
+        <div class="stats stats-vertical lg:stats-horizontal bg-opacity-0">
             <div class="stat">
             <div class="stat-title">點餐人數</div>
             <div class="stat-value">{{ table.length }}</div>
@@ -15,7 +16,7 @@
             <div class="stat-value">{{ getfoodtotalprice(table) }}</div>
             </div>
         </div>
-        </div>
+      </div>
     </div>
     <div class="flex flex-between">
         <div class="dropdown">
@@ -29,7 +30,7 @@
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <!--stutable-->
-            <table v-if="tableType == 'stu'" class="table table-zebra">
+            <table v-if="tableType == 'stu'" class="table">
               <thead>
                 <tr>
                   <th>座號</th>
@@ -47,7 +48,7 @@
             </table>
 
             <!--foodtable-->
-            <table v-if="tableType == 'food'" class="table table-zebra">
+            <table v-if="tableType == 'food'" class="table">
                 <thead>
                   <tr>
                     <th></th>
@@ -70,42 +71,32 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 import { DateTime } from 'luxon';
-import {doc, getDoc, getDocs, setDoc, query, where} from 'firebase/firestore'
-import { usersRef, ordersRef, menuRef } from '@/firebase'
+import { supabase } from '@/supabase'
 
 const now = DateTime.now().setZone('Asia/Taipei')
-const products = JSON.parse(sessionStorage.getItem('products')) === null ? ref([]) : ref(JSON.parse(sessionStorage.getItem('products')).data)
+const sysNow = now.hour>=13 ? now.plus({days: 1}) : now
+const products = ref([])
 
 const table = ref([])
 const tableType = ref("stu")
 
-const getFirestore = async (collectionRef, docid) => {
-  const docRef = doc(collectionRef, docid)
-  const docsnap = await getDoc(docRef)
-  return docsnap.data()
-}
-
 const fetchDatas = async () => {
-  try {
-    const clas = JSON.parse(sessionStorage.getItem('userdata')).class
-    const now = DateTime.now().setZone('Asia/Taipei')
-    const ISOstring = now.hour>=13 ? now.plus({days: 1}).toISODate() : now.toISODate()
-    getFirestore(ordersRef, ISOstring)
-    .then(data => {
-      for (const key in data) {
-        if(clas === data[key]['class']){
-          table.value.push(data[key])
-        }
-      }
-    })
-  } catch (error) {
-    console.log('查詢文件時出錯：', error);
+  const userData = JSON.parse(sessionStorage.getItem('userData'))
+  const { data, error } = await supabase.from('orders').select('*')
+  .eq('date', sysNow.toISODate()).eq('class', userData.data.class)
+  if (error) {
+    console.log(error)
+    return
   }
+  table.value = data
+  console.log(data)
 }
 
-fetchDatas()
+onMounted(() => {
+  fetchDatas()
+})
 
 const getordercode = (order) => {
     const arr = []

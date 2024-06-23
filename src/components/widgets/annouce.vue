@@ -4,14 +4,15 @@
             <div class="avatar">
             </div>
             <h2 class="card-title text-xl"><bullhornicon /> 公告</h2>
-            <div v-if="isDataGet" v-for="(value, key, index) in annoucements" :key="key"  class="collapse collapse-arrow bg-base-200">
+            <div v-if="isDataGet" v-for="(element, index) in annoucements"  class="collapse collapse-arrow">
                 <input type="radio" name="my-collapse" :checked="index===0" />
                 <div class="collapse-title text-xl font-medium">
-                  {{ Object.keys(value)[0] }}
+                  {{ element.title }}
                 </div>
                 <div class="collapse-content">
-                  <p>{{ value[Object.keys(value)[0]] }}</p>
-                  <p>發布日期:<span class="text-gray-500">{{ key }}</span></p>
+                  <p>{{ element.content }}</p>
+                  <p>發布日期:<span class="text-gray-500">{{ DateTime.fromISO(element.created_at).toFormat('yyyy-MM-dd HH:mm') }}</span></p>
+                  <p>發布者:<span class="text-gray-500">{{ element.author }}</span></p>
                 </div>
             </div>
         </div>
@@ -21,36 +22,19 @@
 <script setup>
 import bullhornicon from '@/assets/icons/bullhorn.svg'
 import { ref, onMounted } from 'vue'
-import { doc, getDocs, query, } from 'firebase/firestore'
 import { DateTime } from 'luxon'
-import { annoucementRef } from '@/firebase'
+import { supabase } from '@/supabase'
 
-const annoucements = ref(JSON.parse(sessionStorage.getItem('annoucements'))||{})
-const isDataGet = ref(false)
-const q = query(annoucementRef)
+const annoucements = ref([])
+const isDataGet = ref(true)
 
 const getData = async () => {
-  try{
-  const data = await getDocs(q)
-  if(data){
-    data.forEach((doc) => {
-      annoucements.value[doc.id] = doc.data()
-    });
-    annoucements.value = Object.entries(annoucements.value)
-      .sort(([key1], [key2]) => new Date(key2) - new Date(key1))
-      .reduce((acc, [key, value]) => {
-        acc[key] = value;
-        return acc;
-      }, {});
-    sessionStorage.setItem('annoucements', JSON.stringify(annoucements.value))
-    isDataGet.value = true
-    }else{
-    console.log('data null')
-    }
-  }
-  catch(error){
+  const { data, error } = await supabase.from('annoucements').select('*')
+  if (error) {
     console.log(error)
+    return
   }
+  annoucements.value = data
 }
 
 onMounted(() => {

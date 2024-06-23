@@ -1,4 +1,4 @@
-# LunCLHS Next
+# CLHS Gohan
 
 非官方中壢高中午餐訂餐系統
 

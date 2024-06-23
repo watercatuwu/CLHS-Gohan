@@ -5,20 +5,19 @@
             </div>
             <h2 class="card-title text-xl"><fireicon /> 熱門商品</h2>
             <div class="overflow-x-auto">
-                <table class="table table-zebra">
+                <table class="table">
                   <thead>
-                    <tr>
+                    <tr class="border-0">
                       <th></th>
                       <th>Name</th>
                       <th>Times</th>
-                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(product, index) in newproducts">
+                    <tr v-for="(product, index) in products" class="border-0">
                       <th>{{index+1}}</th>
                       <td>{{product.name}}</td>
-                      <td>{{product.times}}</td>
+                      <td>{{product.count}}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -30,13 +29,20 @@
 <script setup>
 import fireicon from '@/assets/icons/fire.svg'
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { DateTime } from 'luxon'
+import { supabase } from '@/supabase'
 
-const products = ref([{name: "銅馬", times:10},{name: "銅馬", times:20},{name: "銅馬", times:50}])
+const products = ref([])
 
-const numdescending = (a,b) =>{
-  return b.times - a.times
+const now = DateTime.now().setZone('Asia/Taipei')
+const sysNow = now.hour>=13 ? now.plus({days: 1}) : now
+
+const fetchDatas = async () => {
+  const { data, error } = await supabase.from('statstics').select('*').eq('date', sysNow.toISODate()).order('count', { ascending: false }).limit(5)
+  console.log(data)
+  products.value = data
 }
 
-const newproducts = products.value.sort(numdescending)
+onMounted(()=>{fetchDatas()})
 </script>

@@ -39,8 +39,8 @@
                   </tbody>
                 </table>
             </div>
-            <button v-show="isFormClosed || !products.isOpened" disabled class="btn btn-neutral" >表單已截止</button>
-            <button v-show="!isFormClosed && products.isOpened" @click="choosebot" class="btn btn-accent" >選擇困難小幫手</button>
+            <button v-show="isFormClosed || !products.isOpenToday" disabled class="btn btn-neutral" >表單已截止</button>
+            <button v-show="!isFormClosed && products.isOpenToday" @click="choosebot" class="btn btn-accent" >選擇困難小幫手</button>
             <button v-show="Object.keys(cart).length > 0" @click="checkout" class="btn btn-primary" >結帳</button>
             <button v-show="Object.keys(cart).length > 0" @click="clearCart" class="btn btn-error" >清空購物車</button>
         </div>
@@ -48,8 +48,8 @@
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <h2 class="card-title text-xl"><shopicon />商品</h2>
-            <h2 v-if="isDataGet && !products.isOpened" class="card-title text-xl">本日放假</h2>
-            <div v-if="isDataGet && products.isOpened" class="overflow-x-auto">
+            <h2 v-if="isDataGet && !products.isOpenToday" class="card-title text-xl">本日放假</h2>
+            <div v-if="isDataGet && products.isOpenToday" class="overflow-x-auto">
                 <table class="table">
                   <thead>
                     <tr class="border-0">
@@ -132,9 +132,9 @@ import shopicon from '@/assets/icons/shopping.svg'
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { DateTime } from 'luxon'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { menuRef, ordersRef } from '@/firebase'
 import { getRandom, priceSum } from '@/utils/utils'
+
+import { supabase } from '@/supabase'
 
 
 import toast from '@/components/widgets/toast.vue'
@@ -156,68 +156,43 @@ if(dayselectStroge){
 }else{
   dayselect.value = sysNow
 }
-const products = ref(JSON.parse(sessionStorage.getItem(`menu${dayselect.value.toISODate()}`)) || {})
+const products = ref({})
 
-onMounted(() => {
-  if (Object.keys(products.value).length === 0) {
-  getFirestore(menuRef, sysNow.toISODate())
-  .then(data => {
-    const result = setComboMeal(data)
-    sessionStorage.setItem(`menu${sysNow.toISODate()}`, JSON.stringify(result))
-    console.log(result)
-    isDataGet.value = true
-    products.value = result
-  })
-  .catch(error => {
-    console.error('There was a problem with the fetch operation:', error)
-  })
-  }else{
-    isDataGet.value = true
-  }
+onMounted(async() => {
+  products.value = await fetchMenus()
 })
 
-const switchday = (type) => {
+const fetchMenus = async() => {
+  const {data, error} = await supabase.from('menus').select('*').eq('date', dayselect.value.toISODate()).single()
+  if (error) {
+    console.log(error)
+  }else{
+    isDataGet.value = true
+    return setComboMeal(data)
+  }
+}
+
+const switchday = async(type) => {
   clearCart()
+  /*
   if (type === 'prev' && dayselect.value.toISODate() > sysNow.toISODate()) {
     dayselect.value = dayselect.value.minus({days: 1})
   }
   if(type === 'next' && dayselect.value.toISODate() < sysNow.endOf('week').toISODate()) {
     dayselect.value = dayselect.value.plus({days: 1})
   }
+  */
 
   //for dev
-  /*
   if (type === 'prev') {
     dayselect.value = dayselect.value.minus({days: 1})
   }
   if(type === 'next') {
     dayselect.value = dayselect.value.plus({days: 1})
   }
-  */
 
-  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate())) //儲存為iso字串
-  const menuStorage = sessionStorage.getItem(`menu${dayselect.value.toISODate()}`)
-  if (menuStorage) {
-    products.value = JSON.parse(menuStorage)
-    isDataGet.value = true
-  }else{
-    getFirestore(menuRef, dayselect.value.toISODate())
-    .then(data => {
-      const result = setComboMeal(data)
-      sessionStorage.setItem(`menu${dayselect.value.toISODate()}`, JSON.stringify(result))
-      isDataGet.value = true
-      products.value = result
-    })
-    .catch(error => {
-      console.error('There was a problem with the fetch operation:', error)
-    })
-  }
-}
-
-const getFirestore = async (collectionRef, docid) => {
-  const docRef = doc(collectionRef, docid)
-  const docsnap = await getDoc(docRef)
-  return docsnap.data()
+  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate())) 
+  products.value = await fetchMenus()
 }
 
 const addToCart = (product) => {
@@ -227,6 +202,8 @@ const addToCart = (product) => {
   const cloneProduct = JSON.parse(JSON.stringify(product)) //deepclone
   cart.value.unshift(cloneProduct) //將元素新增至首位
   sessionStorage.setItem('cart', JSON.stringify(cart.value))
+
+  showToast('已加入購物車')
 }
 
 const removeFromCart = (index) => {
@@ -236,6 +213,7 @@ const removeFromCart = (index) => {
     }else{
         sessionStorage.removeItem('cart')
     }
+    showToast('已移出購物車')
 }
 
 const checkout = () => {
@@ -247,30 +225,70 @@ const clearCart = () => {
   sessionStorage.removeItem('cart')
 }
 
-const checkoutsend = () => {
-  const uid = JSON.parse(sessionStorage.getItem('currentUser')).uid
-  if (uid === "demo") {
-    showToast('請先登入', 'alert-error')
-  }else{
-  const data = {
-    [uid]: {
-      "class": JSON.parse(sessionStorage.getItem('userdata')).class,
-      "number": JSON.parse(sessionStorage.getItem('userdata')).number,
-      "order": cart.value,
-      "payment": payment.value,
-      "isPay": false
+const checkoutsend = async () => {
+  //儲存資料至statstics
+  for (let [key, value] of Object.entries(cartCount())) {
+    const id = dayselect.value.toISODate() + '-' + key;
+    const date = dayselect.value.toISODate();
+
+    // 查詢現有資料
+    const { data: existingData, error: fetchError } = await supabase
+      .from('statstics')
+      .select('count')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      if (fetchError.code === 'PGRST116') {
+        // 如果資料不存在，插入新資料
+        const { error: insertError } = await supabase
+          .from('statstics')
+          .insert({
+            id: id,
+            date: date,
+            code: value.code,
+            name: value.name,
+            count: value.count,
+          });
+        if (insertError) {
+          console.log(insertError);
+        }
+      }
+    } else {
+      // 如果資料存在，累加 count
+      const newCount = existingData.count + value.count;
+      const { error: updateError } = await supabase
+        .from('statstics')
+        .update({ count: newCount })
+        .eq('id', id);
+
+      if (updateError) {
+        console.log(updateError);
+      }
     }
   }
-  const docRef = doc(ordersRef, dayselect.value.toISODate())
-  setDoc(docRef, data, { merge: true })
-    .then(() => {
-      showToast('結帳成功', 'alert-success')
-      clearCart()
-    })
-    .catch((error) => {
-      showToast(error, 'alert-error')
-    })
+
+  //儲存資料至orders
+  const userData = JSON.parse(sessionStorage.getItem('userData'))
+  const { error } = await supabase.from('orders').upsert({
+    id: dayselect.value.toISODate() + '-' + userData.auth.id,
+    date: dayselect.value.toISODate(),
+    uuid: userData.auth.id,
+    class: userData.data.class,
+    number: userData.data.number,
+    order: cart.value,
+    payment: payment.value
+  })
+  if (error) {
+    console.log(error)
+    showToast(error, 'alert-error')
+    return
   }
+
+  clearCart()
+  showToast('訂單已送出', 'alert-success')
+
+  document.querySelector('#checkoutmodal').close()
 }
 
 const choosebot = () => {
@@ -279,7 +297,7 @@ const choosebot = () => {
 }
 
 const setComboMeal = (menu) =>{
-  if (!menu.isOpened) {
+  if (!menu.isOpenToday) {
     return menu
   }
 
@@ -297,6 +315,18 @@ const setComboMeal = (menu) =>{
   })
 
   return menu
+}
+
+function cartCount() {
+  const obj = {}
+  for (let food of cart.value) {
+    if (!obj.hasOwnProperty(food.code)) {
+      obj[food.code] = food
+      obj[food.code].count = 0
+    }
+    obj[food.code].count ++
+  }
+  return obj
 }
 
 // toast
