@@ -14,10 +14,11 @@ export default defineConfig({
   plugins: [vue(), svgLoader(), VitePWA({
       cachingStrategy: 'NetworkOnly',
       manifest: {
-      name: 'LunCLHS Next',
-      short_name: 'LunCLHS Next',
+      name: 'CLHS Gohan',
+      short_name: 'CLHS Gohan',
       description: '非官方壢中熱食部點餐系統',
-      theme_color: '#0A131A',
+      theme_color: '#BFE2FF',
+      background_color: '#0A131A',
       display: 'standalone',
       icons: [
         {
