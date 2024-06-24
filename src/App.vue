@@ -10,7 +10,7 @@
       </router-view>
     </div>
   </div>
-  <bottomnav v-show="showNavbar" />
+  <bottomnav v-if="showNavbar" />
 </template>
 
 <script setup>
