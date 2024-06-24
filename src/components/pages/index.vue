@@ -12,7 +12,7 @@
             <p class="my-4">非官方中大壢中熱食部點餐系統</p>
             <login />
             <div class="my-4">
-              <a href="https://github.com/watercatuwu/lunclhsnext/blob/main/privacy.md" class="link">隱私權政策</a>
+              <a href="https://github.com/watercatuwu/clhs-gohan/blob/main/privacy.md" class="link">隱私權政策</a>
             </div>
             <div class="flex justify-center my-4">
               <angledownicon class="animate-bounce"/>
@@ -29,7 +29,7 @@
         <h1 class="text-3xl font-bold flex items-center">關於</h1>
         <p class="text-lg">CLHS Gohan是由watercatuwu開發的壢中熱食部非官方點餐系統</p>
         <p class="text-lg text-red-500">注意：本系統並無與熱食部連動，僅供事務統計使用。</p>
-        <p class="text-lg">詳細請見<a href="https://github.com/watercatuwu/lunclhsnext" class="link text-lg">Github Repo</a></p>
+        <p class="text-lg">詳細請見<a href="https://github.com/watercatuwu/clhs-gohan" class="link text-lg">Github Repo</a></p>
     </div>
   </div>
   <roadmap />

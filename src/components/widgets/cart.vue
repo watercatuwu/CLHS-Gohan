@@ -2,9 +2,9 @@
   <div class="card bg-base-200 shadow-md border-gray-400">
     <div class="card-body">
       <div class="flex flex-row justify-between items-center">
-        <button @click="switchday('prev')"  class="btn btn-neutral btn-sm"><<</button>
+        <button :disabled="sysNow.toISODate() === dayselect.toISODate()" @click="prevDay" class="btn btn-neutral btn-sm"><<</button>
         <h2 class="text-xl font-bold">{{ dayselect.setLocale('zh-tw').toFormat('MM-dd ccc') }}</h2>
-        <button @click="switchday('next')" class="btn btn-neutral btn-sm">>></button>
+        <button :disabled="sysNow.endOf('week').toISODate() === dayselect.toISODate()" @click="nextDay" class="btn btn-neutral btn-sm">>></button>
       </div>
     </div>
   </div>
@@ -172,28 +172,20 @@ const fetchMenus = async() => {
   }
 }
 
-const switchday = async(type) => {
+const prevDay = async() =>{
   clearCart()
-  /*
-  if (type === 'prev' && dayselect.value.toISODate() > sysNow.toISODate()) {
-    dayselect.value = dayselect.value.minus({days: 1})
-  }
-  if(type === 'next' && dayselect.value.toISODate() < sysNow.endOf('week').toISODate()) {
-    dayselect.value = dayselect.value.plus({days: 1})
-  }
-  */
-
-  //for dev
-  if (type === 'prev') {
-    dayselect.value = dayselect.value.minus({days: 1})
-  }
-  if(type === 'next') {
-    dayselect.value = dayselect.value.plus({days: 1})
-  }
-
-  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate())) 
+  dayselect.value = dayselect.value.minus({days: 1})
+  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate()))
   products.value = await fetchMenus()
 }
+
+const nextDay = async() =>{
+  clearCart()
+  dayselect.value = dayselect.value.plus({days: 1})
+  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate()))
+  products.value = await fetchMenus()
+}
+
 
 const addToCart = (product) => {
   if(Number.isInteger(product.code)){
@@ -226,48 +218,6 @@ const clearCart = () => {
 }
 
 const checkoutsend = async () => {
-  //儲存資料至statstics
-  for (let [key, value] of Object.entries(cartCount())) {
-    const id = dayselect.value.toISODate() + '-' + key;
-    const date = dayselect.value.toISODate();
-
-    // 查詢現有資料
-    const { data: existingData, error: fetchError } = await supabase
-      .from('statstics')
-      .select('count')
-      .eq('id', id)
-      .single();
-
-    if (fetchError) {
-      if (fetchError.code === 'PGRST116') {
-        // 如果資料不存在，插入新資料
-        const { error: insertError } = await supabase
-          .from('statstics')
-          .insert({
-            id: id,
-            date: date,
-            code: value.code,
-            name: value.name,
-            count: value.count,
-          });
-        if (insertError) {
-          console.log(insertError);
-        }
-      }
-    } else {
-      // 如果資料存在，累加 count
-      const newCount = existingData.count + value.count;
-      const { error: updateError } = await supabase
-        .from('statstics')
-        .update({ count: newCount })
-        .eq('id', id);
-
-      if (updateError) {
-        console.log(updateError);
-      }
-    }
-  }
-
   //儲存資料至orders
   const userData = JSON.parse(sessionStorage.getItem('userData'))
   const { error } = await supabase.from('orders').upsert({

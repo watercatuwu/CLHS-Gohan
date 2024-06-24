@@ -42,7 +42,7 @@ const orders = ref([])
 
 const fetchDatas = async () => {
   const uesrData = JSON.parse(sessionStorage.getItem('userData'))
-  const { data, error } = await supabase.from('orders').select('*').limit(10)
+  const { data, error } = await supabase.from('orders').select('*').limit(7)
   .eq('uuid', uesrData.auth.id)
   .order('date', { ascending: false })
 

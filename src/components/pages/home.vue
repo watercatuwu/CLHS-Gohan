@@ -1,7 +1,6 @@
 <template>
     <div class="min-h-[100dvh]">
         <div class="container mx-auto p-2 pb-24 space-y-2">
-            <hot />
             <annouce />
         </div>
     </div>
@@ -9,7 +8,6 @@
 
 <script setup>
 import annouce from '@/components/widgets/annouce.vue';
-import hot from '@/components/widgets/hot.vue';
 
 import { onMounted } from 'vue'
 

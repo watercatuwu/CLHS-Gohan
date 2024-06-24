@@ -5,10 +5,9 @@
             <cardlink :to="'/manage'" :text="'統計頁面'" />
             <div class="card bg-base-200 shadow-md border-gray-400">
                 <div class="card-body">
-                    <div class="flex justify-between items-center">
-                        <h2 class="card-title text-2xl">客服</h2>
-                        請洽Discord @watercatuwu
-                    </div>
+                    <h2 class="card-title text-2xl">問題回報</h2>
+                    Discord @watercatuwu
+                    <a class="link" href="https://github.com/watercatuwu/clhs-gohan/issues/">GitHub issues</a>
                 </div>
             </div>
             <settings />

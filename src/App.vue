@@ -10,17 +10,20 @@
       </router-view>
     </div>
   </div>
-  <bottomnav v-show="!navDisabledPages.includes(route.name)" />
+  <bottomnav v-show="showNavbar" />
 </template>
 
 <script setup>
 import { useRoute, RouterView } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import bottomnav from './components/widgets/bottomnav.vue';
 
-const navDisabledPages = ['index', '404'];
-
 const route = useRoute();
+const showNavbar = ref(false);
+
+watch(() => route.meta, (newMeta) => {
+  showNavbar.value = newMeta.navbar !== false;
+}, { immediate: true });
 
 onMounted(() => {
   const imgurl = localStorage.getItem('imgurl')

@@ -2,9 +2,9 @@
   <div class="card bg-base-200 shadow-md border-gray-400">
     <div class="card-body">
       <div class="flex flex-row justify-between items-center">
-        <button @click="switchday('prev')"  class="btn btn-neutral btn-sm"><<</button>
+        <button :disabled="sysNow.toISODate() === dayselect.toISODate()" @click="prevDay" class="btn btn-neutral btn-sm"><<</button>
         <h2 class="text-xl font-bold">{{ dayselect.setLocale('zh-tw').toFormat('MM-dd ccc') }}</h2>
-        <button @click="switchday('next')" class="btn btn-neutral btn-sm">>></button>
+        <button :disabled="sysNow.endOf('week').toISODate() === dayselect.toISODate()" @click="nextDay" class="btn btn-neutral btn-sm">>></button>
       </div>
     </div>
   </div>
@@ -80,25 +80,15 @@ if(dayselectStroge){
 
 const orders = ref({})
 
-const switchday = async(type) => {
-  /*
-  if (type === 'prev' && dayselect.value.toISODate() > sysNow.toISODate()) {
-    dayselect.value = dayselect.value.minus({days: 1})
-  }
-  if(type === 'next' && dayselect.value.toISODate() < sysNow.endOf('week').toISODate()) {
-    dayselect.value = dayselect.value.plus({days: 1})
-  }
-  */
+const prevDay = async() =>{
+  dayselect.value = dayselect.value.minus({days: 1})
+  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate()))
+  await fetchOrders()
+}
 
-  //for dev
-  if (type === 'prev') {
-    dayselect.value = dayselect.value.minus({days: 1})
-  }
-  if(type === 'next') {
-    dayselect.value = dayselect.value.plus({days: 1})
-  }
-
-  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate())) //儲存為iso字串
+const nextDay = async() =>{
+  dayselect.value = dayselect.value.plus({days: 1})
+  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate()))
   await fetchOrders()
 }
 
