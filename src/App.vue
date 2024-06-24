@@ -18,6 +18,8 @@ import { useRoute, RouterView } from 'vue-router'
 import { ref, onMounted, watch } from 'vue'
 import bottomnav from './components/widgets/bottomnav.vue';
 
+import { SpeedInsights } from "@vercel/speed-insights/vue"
+
 const route = useRoute();
 const showNavbar = ref(false);
 
