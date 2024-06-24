@@ -11,6 +11,7 @@
     </div>
   </div>
   <bottomnav v-if="showNavbar" />
+  <SpeedInsights />
 </template>
 
 <script setup>
