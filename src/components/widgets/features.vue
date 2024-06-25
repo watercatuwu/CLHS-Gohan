@@ -64,7 +64,7 @@
                         <th>加飯</th>
                       </tr>
                     </thead>
-                    <tbody v-if="ordersexample">
+                    <tbody v-show="ordersexample">
                       <tr class="border-0">
                         <th>1</th>
                         <td>香辣烤雞</td>
@@ -129,9 +129,7 @@ const toastRef = ref(null)
 
 const refreshOrders = () => {
   toastRef.value.showToast('已重新整理')
-  setTimeout(() => {
-    ordersexample.value = true
-  }, 1000)
+  ordersexample.value = true
 }
 
 const cancelOrders = () => {

@@ -215,7 +215,7 @@ export default {
         'Vercel-black':{
           "primary": "#FFF",
           "primary-focus": "#004A9C",
-          "primary-content": "#00000",
+          "primary-content": "#000000",
         
           "secondary": "#141414",
           "secondary-focus": "#1A1A1A",
