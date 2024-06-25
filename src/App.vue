@@ -29,8 +29,8 @@ watch(() => route.meta, (newMeta) => {
 }, { immediate: true });
 
 onMounted(() => {
-  const imgurl = localStorage.getItem('imgurl')
-  const app = document.querySelector('#bg')
-  app.style.backgroundImage = `url(${imgurl})`
+  const img = localStorage.getItem('img')
+  const bg = document.querySelector('#bg')
+  bg.style.backgroundImage = `url(${img})`
 })
 </script>

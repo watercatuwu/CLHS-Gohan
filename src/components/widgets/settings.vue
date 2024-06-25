@@ -10,10 +10,7 @@
                     <dialog id="bgmodal" class="modal">
                         <div class="modal-box space-y-2">
                             <h3 class="text-lg">背景圖片</h3>
-                            <label class="input input-bordered flex items-center gap-2">
-                                <input v-model="imgurl" type="url" placeholder="Paste url here" class="grow" />
-                                <button @click="imgurl=''"><trashbinicon /></button>
-                            </label>
+                            <input id="bginput" type="file" class="file-input file-input-bordered w-full" />
                             <div class="py-2">
                                 <h3 class="text-lg">卡片透明度</h3>
                                 <div class="flex py-4">
@@ -45,11 +42,9 @@ import toast from '@/components/widgets/toast.vue'
 import themepicker from '@/components/widgets/themepicker.vue'
 
 import { ref } from 'vue'
-import { checkImage } from '@/utils/utils.js'
 
 const toastRef = ref(null)
 
-const imgurl = ref(localStorage.getItem('imgurl')||'')
 const cardopacity = ref(parseInt(localStorage.getItem('cardopacity'))||50)
 const oldcardopacity = ref(parseInt(localStorage.getItem('cardopacity'))||50)
 const cardglass = ref(localStorage.getItem('cardglass')|| false)
@@ -59,12 +54,21 @@ const showbgmodal = () => {
 }
 
 const setbg = () => {
-    localStorage.setItem('imgurl', imgurl.value)
+    const img = document.getElementById('bginput').files[0]
+    console.log(img)
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+        const base64String = event.target.result;
+        localStorage.setItem('img', base64String)
+        const bg = document.querySelector('#bg')
+        bg.style.backgroundImage = `url(${base64String})`
+    };
+
+    reader.readAsDataURL(img)
+
     localStorage.setItem('cardopacity', cardopacity.value)
     localStorage.setItem('cardglass', cardglass.value)
-    //bg
-    const app = document.querySelector('#bg')
-    app.style.backgroundImage = `url(${imgurl.value})`
     //cards
     const cards = document.querySelectorAll('.card')
     cards.forEach((card) => {

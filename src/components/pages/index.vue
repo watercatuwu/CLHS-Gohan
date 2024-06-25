@@ -51,8 +51,8 @@ import features from "@/components/widgets/features.vue";
 import { onMounted } from 'vue'
 
 onMounted(() => {
-  const imgurl = localStorage.getItem('imgurl')
-  const app = document.querySelector('#hero')
-  app.style.backgroundImage = `url(${imgurl})`
+  const img = localStorage.getItem('img')
+  const hero = document.querySelector('#hero')
+  hero.style.backgroundImage = `url(${img})`
 })
 </script>
