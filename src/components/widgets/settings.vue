@@ -55,17 +55,18 @@ const showbgmodal = () => {
 
 const setbg = () => {
     const img = document.getElementById('bginput').files[0]
-    console.log(img)
-    const reader = new FileReader();
+    if (img){
+        const reader = new FileReader();
 
-    reader.onload = function(event) {
-        const base64String = event.target.result;
-        localStorage.setItem('img', base64String)
-        const bg = document.querySelector('#bg')
-        bg.style.backgroundImage = `url(${base64String})`
-    };
+        reader.onload = function(event) {
+            const base64String = event.target.result;
+            localStorage.setItem('img', base64String)
+            const bg = document.querySelector('#bg')
+            bg.style.backgroundImage = `url(${base64String})`
+        };
 
-    reader.readAsDataURL(img)
+        reader.readAsDataURL(img)
+    }
 
     localStorage.setItem('cardopacity', cardopacity.value)
     localStorage.setItem('cardglass', cardglass.value)
