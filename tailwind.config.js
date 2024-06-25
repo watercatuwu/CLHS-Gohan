@@ -13,9 +13,6 @@ export default {
     'bg-opacity-80',
     'bg-opacity-90',
     'bg-opacity-100',
-    'backdrop-brightness-50',
-    'backdrop-brightness-75',
-    'backdrop-brightness-100',
   ],
   theme: {
     extend: {},
@@ -62,8 +59,7 @@ export default {
        '--btn-text-case': 'lowercase',
        '--navbar-padding': '.5rem',
        '--border-btn': '1px',
-     }},
-     {
+     },
       'Mocha': {
          'primary' : '#cba6f7',
          'primary-focus' : '#a283c9',
@@ -101,8 +97,7 @@ export default {
         '--btn-text-case': 'lowercase',
         '--navbar-padding': '.5rem',
         '--border-btn': '1px',
-      }},
-      {
+      },
         'Husky': {
            'primary' : '#BFE2FF',
            'primary-focus' : '#a9c7df',
@@ -141,6 +136,120 @@ export default {
           '--navbar-padding': '.5rem',
           '--border-btn': '1px',
         },
+        'Discord':{
+          "primary": "#5865F2",               // Discord Blue
+          "primary-focus": "#4752C4",         // Darker Blue for focus state
+          "primary-content": "#FFFFFF",       // White text on primary
+        
+          "secondary": "#36393F",             // Discord Background
+          "secondary-focus": "#2F3136",       // Slightly darker for focus state
+          "secondary-content": "#DCDDDE",     // Light gray text on secondary
+        
+          "accent": "#57F287",                // Green accent color
+          "accent-focus": "#45C46D",          // Darker green for focus state
+          "accent-content": "#36393F",        // Dark background for accent content
+        
+          "neutral": "#2C2F33",               // Dark neutral color
+          "neutral-focus": "#23272A",         // Darker for focus state
+          "neutral-content": "#DCDDDE",       // Light gray text on neutral
+        
+          "base-100": "#36393F",              // Main background color
+          "base-200": "#2F3136",              // Slightly darker background
+          "base-300": "#202225",              // Darker still
+          "base-content": "#FFFFFF",          // White text on base
+        
+          "info": "#00AFF4",                  // Light blue for information
+          "success": "#43B581",               // Green for success
+          "warning": "#FAA61A",               // Yellow for warnings
+          "error": "#F04747",                 // Red for errors
+        
+          "--rounded-box": "0.375rem",        // Slightly rounded corners
+          "--rounded-btn": "0.375rem",        // Rounded buttons
+          "--rounded-badge": "0.25rem",       // Rounded badges
+        
+          "--animation-btn": "0.3s",          // Slightly longer animation for buttons
+          "--animation-input": "0.3s",        // Slightly longer animation for inputs
+        
+          "--btn-text-case": "none",          // Default text case
+          "--navbar-padding": "1rem",         // More padding for navbar
+          "--border-btn": "1px",              // Border thickness for buttons
+        },
+        'Vercel':{
+          "primary": "#000000",               // Primary color (black)
+          "primary-focus": "#333333",         // Slightly darker primary color
+          "primary-content": "#FFFFFF",       // White text on primary
+        
+          "secondary": "#0070F3",             // Secondary color (blue)
+          "secondary-focus": "#0057C1",       // Darker blue for focus state
+          "secondary-content": "#FFFFFF",     // White text on secondary
+        
+          "accent": "#FF0080",                // Accent color (pink)
+          "accent-focus": "#D6006A",          // Darker pink for focus state
+          "accent-content": "#FFFFFF",        // White text on accent
+        
+          "neutral": "#F8F8F8",               // Neutral color (light gray)
+          "neutral-focus": "#EDEDED",         // Slightly darker neutral color
+          "neutral-content": "#333333",       // Dark text on neutral
+        
+          "base-100": "#FFFFFF",              // Base background color (white)
+          "base-200": "#F5F5F5",              // Slightly darker base background
+          "base-300": "#E0E0E0",              // Darker base background
+          "base-content": "#333333",          // Dark text on base
+        
+          "info": "#1EA7FD",                  // Information color (light blue)
+          "success": "#00C781",               // Success color (green)
+          "warning": "#FFAA2C",               // Warning color (yellow)
+          "error": "#FF4D4F",                 // Error color (red)
+        
+          "--rounded-box": ".5rem",           // Rounded corners for boxes
+          "--rounded-btn": ".5rem",           // Rounded corners for buttons
+          "--rounded-badge": ".25rem",        // Rounded corners for badges
+        
+          "--animation-btn": ".3s",           // Button animation duration
+          "--animation-input": ".2s",         // Input animation duration
+        
+          "--btn-text-case": "uppercase",     // Button text in uppercase
+          "--navbar-padding": ".75rem",       // Padding for navbar
+          "--border-btn": "1px solid #E0E0E0" // Border thickness for buttons
+        },
+        'Vercel-black':{
+          "primary": "#FFF",
+          "primary-focus": "#004A9C",
+          "primary-content": "#00000",
+        
+          "secondary": "#141414",
+          "secondary-focus": "#1A1A1A",
+          "secondary-content": "#E0E0E0",
+        
+          "accent": "#FFD700",
+          "accent-focus": "#FFC300",
+          "accent-content": "#141414",
+        
+          "neutral": "#1A1A1A",
+          "neutral-focus": "#2E2E2E",
+          "neutral-content": "#E0E0E0",
+        
+          "base-100": "#0A0A0A",
+          "base-200": "#1A1A1A",
+          "base-300": "#2E2E2E",
+          "base-content": "#E0E0E0",
+        
+          "info": "#00BFFF",
+          "success": "#00FF00",
+          "warning": "#FFC107",
+          "error": "#FF6347",
+        
+          "--rounded-box": ".75rem",
+          "--rounded-btn": ".75rem",
+          "--rounded-badge": ".5rem",
+        
+          "--animation-btn": ".25s",
+          "--animation-input": ".2s",
+        
+          "--btn-text-case": "uppercase",
+          "--navbar-padding": ".5rem",
+          "--border-btn": "1px"
+        }
       },
     ],
   },

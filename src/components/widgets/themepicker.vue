@@ -20,5 +20,8 @@ const themelist = [
     "winter",
     'Default',
     "valentine",
+    'Discord',
+    'Vercel',
+    'Vercel-black',
 ]
 </script>

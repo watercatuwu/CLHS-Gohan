@@ -1,7 +1,7 @@
 <template>
   <toast ref="toastRef"/>
-  <div class="flex flex-col justify-center gap-3">
-    <button type="button" class="btn btn-primary mx-2" @click="signInGoogle" :disabled="loading">
+  <div class="flex justify-center items-center gap-3">
+    <button type="button" class="btn btn-primary mx-2 shadow-lg shadow-primary" @click="signInGoogle" :disabled="loading">
       <googleicon />SignIn with Google
       <span class="loading loading-spinner loading-sm" v-if="loading"></span>
     </button>

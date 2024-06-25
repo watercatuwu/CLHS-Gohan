@@ -1,5 +1,6 @@
 <template>
-    <div class="card bg-base-200 shadow-md border-gray-400">
+    <div class="transition transform ease-in-out scale-100 active:scale-95">
+      <div class="card bg-base-200 shadow-md border-gray-400">
         <router-link :to="props.to">
         <div class="card-body">
             <div class="flex justify-between items-center">
@@ -9,6 +10,7 @@
         </div>
         </router-link>
       </div>
+    </div>
 </template>
 
 <script setup>
