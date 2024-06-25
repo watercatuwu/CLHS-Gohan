@@ -15,7 +15,7 @@
               <a href="https://github.com/watercatuwu/clhs-gohan/blob/main/privacy.md" class="link">隱私權政策</a>
             </div>
             <div class="flex justify-center my-4">
-              <angledownicon class="animate-bounce"/>
+              <a href="#features"><angledownicon class="animate-bounce"/></a>
             </div>
           </div>
         </div>

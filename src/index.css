@@ -6,6 +6,7 @@
 
 html, body {
     font-family: "Reddit Sans", sans-serif;
+    scroll-behavior: smooth;
   }
 
 #app {

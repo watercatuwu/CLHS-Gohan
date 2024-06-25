@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full p-10 bg-base-200">
+  <div id='features' class="w-full p-10 bg-base-200">
     <div class="my-8 space-y-10">
       <h1 class="text-3xl font-bold">特色</h1>
       <div>

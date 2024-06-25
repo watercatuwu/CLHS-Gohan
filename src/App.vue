@@ -10,14 +10,14 @@
       </router-view>
     </div>
   </div>
-  <bottomnav v-if="showNavbar" />
+  <Nav v-if="showNavbar" />
   <SpeedInsights />
 </template>
 
 <script setup>
 import { useRoute, RouterView } from 'vue-router'
 import { ref, onMounted, watch } from 'vue'
-import bottomnav from './components/widgets/bottomnav.vue';
+import Nav from '@/components/widgets/nav.vue';
 
 import { SpeedInsights } from "@vercel/speed-insights/vue"
 
