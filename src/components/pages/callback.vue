@@ -1,16 +1,10 @@
 <template>
-    <div class="hero bg-base-100 bg-opacity-80 min-h-[100dvh]">
-        <div class="container mx-auto p-2">
-            <div class="card bg-base-200 shadow-md border-gray-400">
-                <div class="card-body">
-                    <div class="flex justify-center">
-                        <div class="loading loading-spinner loading-lg text-center"></div>
-                    </div>
-                    <p class="text-xl text-center">登入中</p>
-                </div>
-            </div>
-        </div>
+  <div class="hero bg-base-100 bg-opacity-80 min-h-[100dvh]">
+    <div class="flex justify-center items-center gap-4">
+        <div class="loading loading-spinner text-center"></div>
+        <p class="text-lg text-center">登入中</p>
     </div>
+  </div>
 </template>
 
 <script setup>

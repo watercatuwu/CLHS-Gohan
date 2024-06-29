@@ -1,5 +1,6 @@
 <template>
   <div id="bg" class="min-h-[100dvh] bg-fixed bg-center bg-cover">
+    <Nav v-if="showNavbar" />
     <div class="flex flex-col">
       <router-view v-slot="{ Component, route }">
         <Transition name="fade" mode="out-in">
@@ -10,7 +11,6 @@
       </router-view>
     </div>
   </div>
-  <Nav v-if="showNavbar" />
   <SpeedInsights />
 </template>
 

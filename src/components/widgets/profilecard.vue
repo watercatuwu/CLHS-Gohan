@@ -2,30 +2,28 @@
     <div class="card bg-base-200 shadow-md border-gray-400">
         <figure class="w-full h-3 bg-primary"></figure>
         <div class="card-body">
-            <div class="card-actions justify-end">
-                <button @click="logout" class="btn btn-sm btn-error">登出</button>
-            </div>
-            <div class="my-2">
-              <input id="avatarinput" @change="uploadAvatar" type="file" accept="image/png, image/jpeg, image/gif" class="hidden" />
-              <div @click="chooseAvatar" v-if="avatarUrl!==null" class="avatar cursor-pointer tooltip" data-tip="更換頭像">
-                  <span class="absolute inset-0 flex items-center justify-center rounded-full z-10 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/50"><cameraicon /></span>
-                  <div class="w-24 rounded-full ring-primary ring-offset-base-100 ring ring-offset-2">
-                      <img :src="avatarUrl" />
-                  </div>
+          <div>
+            <input id="avatarinput" @change="uploadAvatar" type="file" accept="image/png, image/jpeg, image/gif" class="hidden" />
+            <div @click="chooseAvatar" class="cursor-pointer tooltip" data-tip="更換頭像">
+              <span class="absolute inset-0 flex items-center justify-center rounded-full z-10 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/50"><cameraicon /></span>
+              <div v-if="avatarUrl!==null" class="avatar">
+                <div class="w-24 rounded-full ring-primary ring-offset-base-100 ring ring-offset-2">
+                  <img :src="avatarUrl" />
+                </div>
               </div>
-              <div @click="chooseAvatar" v-else class="avatar placeholder cursor-pointer tooltip" data-tip="更換頭像">
-                <span class="absolute inset-0 flex items-center justify-center rounded-full z-10 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/50"><cameraicon /></span>
+              <div v-else class="avatar placeholder">
                 <div class="bg-neutral text-neutral-content w-24 rounded-full ring-primary ring-offset-base-100 ring ring-offset-2">
-                  <span class="text-3xl">:D</span>
+                  <span class="text-3xl items-center">{{userData.auth.user_metadata.name.slice(-1)}}</span>
                 </div>
               </div>
             </div>
-            <h2 class="card-title text-xl">{{userData.auth.user_metadata.name}}</h2>
-            <p class="text-gray-500">{{userData.auth.email}}</p>
-            <div class="flex gap-2">
-              <div v-for="(tag, index) in userData.data.tags" class="badge badge-primary text-base">{{tag}}</div>
-              <div class="badge badge-neutral text-base">創建日期:{{DateTime.fromISO(userData.auth.created_at).toISODate()}}</div>
-            </div>
+          </div>
+          <h2 class="card-title text-xl">{{userData.auth.user_metadata.name}}</h2>
+          <p class="text-gray-500">{{userData.auth.email}}</p>
+          <div class="flex gap-2">
+            <div v-for="(tag, index) in userData.data.tags" class="badge badge-primary text-base">{{tag}}</div>
+            <div class="badge badge-neutral text-base">創建日期:{{DateTime.fromISO(userData.auth.created_at).toISODate()}}</div>
+          </div>
         </div>
       </div>
       <toast ref="toastRef"/>
@@ -125,13 +123,4 @@ const uploadAvatar = async () => {
     toastRef.value.showToast(`圖片格式錯誤(${avatarFile.type})`, 'alert-error')
   }
 }
-
-const logout = async () => {
-  const { error } = await supabase.auth.signOut()
-  sessionStorage.clear()
-  router.push('/')
-  if (error) {
-    console.log(error)
-  }
-};
 </script>

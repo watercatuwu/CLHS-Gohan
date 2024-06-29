@@ -11,7 +11,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     }
   },
-  plugins: [vue(), svgLoader(), VitePWA({
+  plugins: [vue(), svgLoader(),
+    VitePWA({
       cachingStrategy: 'NetworkOnly',
       manifest: {
       name: 'CLHS Gohan',

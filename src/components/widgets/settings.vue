@@ -10,7 +10,8 @@
                     <dialog id="bgmodal" class="modal">
                         <div class="modal-box space-y-2">
                             <h3 class="text-lg">背景圖片</h3>
-                            <input id="bginput" type="file" class="file-input file-input-bordered w-full" />
+                            <input id="bginput" type="file" accept="image/png, image/jpeg, image/gif" class="file-input file-input-bordered w-full" />
+                            <button @click="delbg" class="btn btn-error w-full">清除</button>
                             <div class="py-2">
                                 <h3 class="text-lg">卡片透明度</h3>
                                 <div class="flex py-4">
@@ -51,6 +52,12 @@ const cardglass = ref(localStorage.getItem('cardglass')|| false)
 
 const showbgmodal = () => {
     document.getElementById('bgmodal').showModal()
+}
+
+const delbg = () => {
+    localStorage.removeItem('img')
+    const bg = document.querySelector('#bg')
+    bg.style.backgroundImage = ''
 }
 
 const setbg = () => {

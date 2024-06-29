@@ -1,4 +1,5 @@
 <template>
+  <warning :msg="warningMsg" />
   <div class="card bg-base-200 shadow-md border-gray-400">
     <div class="card-body">
       <div class="flex flex-row justify-between items-center">
@@ -129,6 +130,8 @@
 import carticon from '@/assets/icons/cart.svg'
 import shopicon from '@/assets/icons/shopping.svg'
 
+import warning from '@/components/widgets/warning.vue'
+
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { DateTime } from 'luxon'
@@ -147,6 +150,8 @@ const isFormClosed = ref(false)
 const now = DateTime.now().setZone('Asia/Taipei')
 const sysNow = now.hour>=13 ? now.plus({days: 1}) : now
 
+const warningMsg = ref('')
+
 isFormClosed.value =  now.hour < 13 && now.hour > 10 ? true : false
 
 const dayselect = ref()
@@ -154,7 +159,7 @@ const dayselectStroge = JSON.parse(sessionStorage.getItem('dayselect'))
 if(dayselectStroge){
   dayselect.value = DateTime.fromISO(dayselectStroge) //透過儲存的iso字串轉換為DateTime物件
 }else{
-  dayselect.value = sysNow
+  dayselect.value = DateTime.fromISO('2024-06-20')
 }
 const products = ref({})
 
@@ -168,6 +173,8 @@ const fetchMenus = async() => {
     console.log(error)
   }else{
     isDataGet.value = true
+    console.log(`本日菜單${data.closeTime}`)
+    warningMsg.value = `本日菜單${data.closeTime}`
     return setComboMeal(data)
   }
 }
@@ -240,6 +247,7 @@ const checkoutsend = async () => {
 
   document.querySelector('#checkoutmodal').close()
 }
+
 
 const choosebot = () => {
   const main = products.value.data[getRandom(0,products.value.data.length)]
