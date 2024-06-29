@@ -1,7 +1,7 @@
 <template>
     <div role="alert" class="alert flex justify-center gap-1">
         <icon name="info" />
-        <span>{{msg}}</span>
+        <span>{{props.msg}}</span>
     </div>
 </template>
 
@@ -13,6 +13,4 @@ import { ref } from 'vue'
 const props = defineProps({
     msg: String
 })
-
-const msg = ref(props.msg)
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar bg-base-100 sticky top-0 z-50">
+  <div v-if="userData" class="navbar bg-base-100 sticky top-0 z-50">
     <div class="navbar-start">
       <div class="drawer">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
@@ -29,25 +29,14 @@
             </li>
             </RouterLink>
             <li v-for="link in links" class="transition transform ease-in-out duration-300 scale-100 hover:scale-105 active:scale-100">
-              <RouterLink :to="link.path">
+              <RouterLink :to="link.path" :class="{'bg-primary': link.path === currentPath, 'text-primary-content': link.path === currentPath}">
                 <icon :name="link.icon" />
                 <span>{{link.name}}</span>
               </RouterLink>
             </li>
           </ul>
           <div class="fixed bottom-0 p-4 w-80">
-            <div class="card bg-base-300 shadow-md">
-              <div class="card-body">
-                <div class="flex justify-between items-center gap-2">
-                  <div class="flex items-center">
-                    <icon name="heart" />
-                    <h2 class="card-title">廣告位</h2>
-                  </div>
-                  <span class="badge badge-secondary">AD</span>
-                </div>
-                <p>Lorem ipsum</p>
-              </div>
-            </div>
+            <advertisement image="https://files.catbox.moe/9tc8px.webp" title="廣告" content="Put Your Logo Here." link="https://youtu.be/BbeeuzU5Qc8" />
           </div>
         </div>
     </div>
@@ -66,13 +55,13 @@
           </div>
         </div>
       </label>
-      <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 z-50">
-        <RouterLink to="/profile">
+      <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow-md bg-base-300 rounded-box w-52 z-50">
           <li>
+            <RouterLink to="/profile">
             Profile
+            </RouterLink>
           </li>
-        </RouterLink>
-        <li><a @click="logout">Logout</a></li>
+        <li><a class="bg-error" @click="logout">Logout</a></li>
       </ul>
     </div>
   </div>
@@ -81,6 +70,7 @@
 
 <script setup>
 import icon from '@/components/widgets/icon.vue'
+import advertisement from '@/components/widgets/advertisement.vue'
 
 import { supabase } from '@/supabase'
 import { ref,onMounted,watch,defineAsyncComponent } from 'vue';
@@ -89,14 +79,10 @@ import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 const router = useRouter()
 
-const currentURL = window.location.href;
-const url = new URL(currentURL);
-const currentPath = url.pathname;
-const PATHS = ['/home', '/shop', '/order', '/profile'];
-const active = ref(PATHS.indexOf(currentPath));
+const route = useRoute();
+const currentPath = ref(route.path);
 const userData = JSON.parse(sessionStorage.getItem('userData'))
 
-const route = useRoute();
 const isRing = ref(false);
 
 const links = [
@@ -109,11 +95,7 @@ const links = [
 
 watch(() => route.path,(newRoutePath) => {
   console.log(newRoutePath)
-  if(newRoutePath==='/profile') {
-    isRing.value = true;
-  } else{
-    isRing.value = false;
-  }
+  currentPath.value = newRoutePath
 });
 
 const avatarUrl = ref('');

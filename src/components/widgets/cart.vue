@@ -173,8 +173,8 @@ const fetchMenus = async() => {
     console.log(error)
   }else{
     isDataGet.value = true
-    console.log(`本日菜單${data.closeTime}`)
-    warningMsg.value = `本日菜單${data.closeTime}`
+    const closeTime = DateTime.fromISO(data.closeTime).setLocale('zh-tw')
+    warningMsg.value = `點餐截止時間:  ${closeTime.toFormat('T')}`
     return setComboMeal(data)
   }
 }

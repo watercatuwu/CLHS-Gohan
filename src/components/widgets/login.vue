@@ -35,7 +35,7 @@ const signInGoogle = async() => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: 'http://localhost:5173/callback',
+      redirectTo: `https://${window.location.hostname}/callback`,
       queryParams:{
         prompt: 'select_account',
         hd: 'student.clhs.tyc.edu.tw',
