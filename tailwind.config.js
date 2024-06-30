@@ -125,9 +125,9 @@ export default {
            'warning' : '#c5e137',
            'error' : '#ec3266',
 
-          '--rounded-box': '.75rem',
-          '--rounded-btn': '.75rem',
-          '--rounded-badge': '.5rem',
+          '--rounded-box': '1rem',
+          '--rounded-btn': '10rem',
+          '--rounded-badge': '1.9rem',
 
           '--animation-btn': '.25s',
           '--animation-input': '.2s',

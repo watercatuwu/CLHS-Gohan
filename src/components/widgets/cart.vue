@@ -131,6 +131,7 @@ import carticon from '@/assets/icons/cart.svg'
 import shopicon from '@/assets/icons/shopping.svg'
 
 import warning from '@/components/widgets/warning.vue'
+import { cart } from '@/reactive/cart'
 
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
@@ -142,7 +143,6 @@ import { supabase } from '@/supabase'
 
 import toast from '@/components/widgets/toast.vue'
 
-const cart = ref(JSON.parse(sessionStorage.getItem('cart')) || [])
 const payment = ref('')
 const isDataGet = ref(false)
 
@@ -199,20 +199,14 @@ const addToCart = (product) => {
     product.addrice = false
   }
   const cloneProduct = JSON.parse(JSON.stringify(product)) //deepclone
-  cart.value.unshift(cloneProduct) //將元素新增至首位
-  sessionStorage.setItem('cart', JSON.stringify(cart.value))
+  cart.unshift(cloneProduct) //將元素新增至首位
 
   showToast('已加入購物車')
 }
 
 const removeFromCart = (index) => {
-    cart.value.splice(index, 1)
-    if (cart.value.length > 0) {
-        sessionStorage.setItem('cart', JSON.stringify(cart.value))
-    }else{
-        sessionStorage.removeItem('cart')
-    }
-    showToast('已移出購物車')
+  cart.splice(index, 1)
+  showToast('已移出購物車')
 }
 
 const checkout = () => {
@@ -220,8 +214,7 @@ const checkout = () => {
 }
 
 const clearCart = () => {
-  cart.value = []
-  sessionStorage.removeItem('cart')
+  cart.length = 0
 }
 
 const checkoutsend = async () => {
@@ -233,7 +226,7 @@ const checkoutsend = async () => {
     uuid: userData.auth.id,
     class: userData.data.class,
     number: userData.data.number,
-    order: cart.value,
+    order: cart,
     payment: payment.value
   })
   if (error) {
@@ -277,7 +270,7 @@ const setComboMeal = (menu) =>{
 
 function cartCount() {
   const obj = {}
-  for (let food of cart.value) {
+  for (let food of cart) {
     if (!obj.hasOwnProperty(food.code)) {
       obj[food.code] = food
       obj[food.code].count = 0

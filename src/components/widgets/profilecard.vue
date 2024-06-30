@@ -5,7 +5,7 @@
           <div>
             <input id="avatarinput" @change="uploadAvatar" type="file" accept="image/png, image/jpeg, image/gif" class="hidden" />
             <div @click="chooseAvatar" class="cursor-pointer tooltip" data-tip="更換頭像">
-              <span class="absolute inset-0 flex items-center justify-center rounded-full z-10 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/50"><cameraicon /></span>
+              <span class="absolute inset-0 flex items-center justify-center rounded-full z-10 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/50"><icon name='camera'/></span>
               <div v-if="avatarUrl!==null" class="avatar">
                 <div class="w-24 rounded-full ring-primary ring-offset-base-100 ring ring-offset-2">
                   <img :src="avatarUrl" />
@@ -18,8 +18,15 @@
               </div>
             </div>
           </div>
-          <h2 class="card-title text-xl">{{userData.auth.user_metadata.name}}</h2>
-          <p class="text-gray-500">{{userData.auth.email}}</p>
+          <div class='flex items-center'>
+            <h2 class="card-title text-xl">{{userData.auth.user_metadata.name}}</h2>
+            <div class="tooltip tooltip-right" data-tip="複製UUID">
+              <button @click='copyUUID' class='btn btn-ghost btn-sm'><icon name='copy'/></button>
+            </div>
+          </div>
+          <div class='flex flex-col gap-0'>
+            <p class="text-gray-500">{{userData.auth.email}}</p>
+          </div>
           <div class="flex gap-2">
             <div v-for="(tag, index) in userData.data.tags" class="badge badge-primary text-base">{{tag}}</div>
             <div class="badge badge-neutral text-base">創建日期:{{DateTime.fromISO(userData.auth.created_at).toISODate()}}</div>
@@ -30,7 +37,7 @@
 </template>
 
 <script setup>
-import cameraicon from '@/assets/icons/camera.svg'
+import icon from '@/components/widgets/icon.vue'
 
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue'
@@ -122,5 +129,12 @@ const uploadAvatar = async () => {
   } else {
     toastRef.value.showToast(`圖片格式錯誤(${avatarFile.type})`, 'alert-error')
   }
+}
+
+const copyUUID = () => {
+  const userUID = userData.auth.id
+  navigator.clipboard.writeText(userUID)
+    .then(() => toastRef.value.showToast(`複製成功(${userUID})`), 'alert-success')
+    .catch(() => toastRef.value.showToast('複製失敗'), 'alert-error')
 }
 </script>

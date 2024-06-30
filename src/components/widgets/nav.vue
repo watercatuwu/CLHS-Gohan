@@ -4,7 +4,7 @@
       <div class="drawer">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content">
-          <label for="my-drawer" class="btn btn-ghost btn-circle drawer-button"><icon name="bar"></icon></label>
+          <label @click="randomSponsors" for="my-drawer" class="btn btn-ghost btn-circle drawer-button"><icon name="bar"></icon></label>
         </div>
         <div class="drawer-side z-50">
           <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
@@ -35,13 +35,40 @@
               </RouterLink>
             </li>
           </ul>
-          <div class="fixed bottom-0 p-4 w-80">
-            <advertisement image="https://files.catbox.moe/9tc8px.webp" title="廣告" content="Put Your Logo Here." link="https://youtu.be/BbeeuzU5Qc8" />
+          <div v-if="sponsorsData.length>0" class="fixed bottom-0 p-4 w-80">
+            <sponsors
+              :name="sponsorsData[sponsorsIndex].name"
+              :image="sponsorsData[sponsorsIndex].image"
+              :title="sponsorsData[sponsorsIndex].title"
+              :content="sponsorsData[sponsorsIndex].content"
+              :link="sponsorsData[sponsorsIndex].link"
+              :linkTitle="sponsorsData[sponsorsIndex].linkTitle"
+            />
           </div>
         </div>
     </div>
   </div>
-  <div class="navbar-end">
+  <div class="navbar-end gap-2">
+    <div class="dropdown dropdown-end">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+        <div class="indicator">
+          <icon name='cart' />
+          <span class="badge badge-sm indicator-item">{{cart.length}}</span>
+        </div>
+      </div>
+      <div
+        tabindex="0"
+        class="card card-compact dropdown-content bg-base-300 z-[1] mt-3 w-52 shadow">
+        <div class="card-body">
+          <span class="text-lg font-bold">{{cart.length}} 個商品</span>
+          <span class="text-info">小計: ${{priceSum(cart)}}</span>
+          <div class="card-actions">
+            <RouterLink to='/shop' class="btn btn-primary btn-block btn-sm">前往購物車</RouterLink>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="dropdown dropdown-end">
       <label tabindex="0" class="btn btn-ghost btn-circle avatar">
         <div v-if="avatarUrl!==null" class="avatar">
@@ -55,14 +82,14 @@
           </div>
         </div>
       </label>
-      <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow-md bg-base-300 rounded-box w-52 z-50">
-          <li>
-            <RouterLink to="/profile">
-            Profile
-            </RouterLink>
-          </li>
-        <li><a class="bg-error" @click="logout">Logout</a></li>
-      </ul>
+      <div tabindex="0" class="card card-compact dropdown-content bg-base-300 z-[1] mt-3 w-52 shadow">
+        <div class='card-body'>
+          <h2 class='text-lg font-bold'>{{userData.auth.user_metadata.name}}</h2>
+          <div class='card-actions'>
+            <button class="btn btn-sm btn-error btn-block" @click="logout">Logout</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -70,18 +97,23 @@
 
 <script setup>
 import icon from '@/components/widgets/icon.vue'
-import advertisement from '@/components/widgets/advertisement.vue'
+import sponsors from '@/components/widgets/sponsors.vue'
 
 import { supabase } from '@/supabase'
 import { ref,onMounted,watch,defineAsyncComponent } from 'vue';
 import { getUserAvatar } from '@/utils/supabase';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
+import { getRandom, priceSum } from '@/utils/utils'
+import { cart } from '@/reactive/cart'
 
 const router = useRouter()
 
 const route = useRoute();
 const currentPath = ref(route.path);
 const userData = JSON.parse(sessionStorage.getItem('userData'))
+
+const sponsorsData = ref(JSON.parse(sessionStorage.getItem('sponsors'))||[])
+const sponsorsIndex = ref(0)
 
 const isRing = ref(false);
 
@@ -100,7 +132,9 @@ watch(() => route.path,(newRoutePath) => {
 
 const avatarUrl = ref('');
 onMounted(async () => {
-  avatarUrl.value = await getUserAvatar();
+  avatarUrl.value = await getUserAvatar()
+  sponsorsData.value = await getSponsors()
+  randomSponsors()
 })
 
 const logout = async () => {
@@ -111,4 +145,19 @@ const logout = async () => {
     console.log(error)
   }
 };
+
+const getSponsors = async () => {
+  const { data, error } = await supabase.from('sponsors').select().order('id')
+  if (error){
+    console.error(error)
+  }
+  console.log(data)
+  sessionStorage.setItem('sponsors', JSON.stringify(data))
+  return data
+}
+
+const randomSponsors = () => {
+  sponsorsIndex.value = getRandom(0,sponsorsData.value.length)
+  console.log(sponsorsIndex.value)
+}
 </script>
