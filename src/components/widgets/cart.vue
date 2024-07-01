@@ -1,5 +1,7 @@
 <template>
-  <warning :msg="warningMsg" />
+  <transition name="fade">
+  <div class='space-y-2' v-if="!isLoading">
+    <warning :msg="warningMsg" />
     <dayselect @update="updateProduct" />
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
@@ -41,8 +43,8 @@
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <h2 class="card-title text-xl"><icon name="store" />商品</h2>
-            <h2 v-if="isDataGet && !products.isOpenToday" class="card-title text-xl">本日放假</h2>
-            <div v-if="isDataGet && products.isOpenToday" class="overflow-x-auto">
+            <h2 v-if="!products.isOpenToday" class="card-title text-xl">本日放假</h2>
+            <div v-if="products.isOpenToday" class="overflow-x-auto">
                 <table class="table">
                   <thead>
                     <tr class="border-0">
@@ -66,6 +68,8 @@
             </div>
         </div>
     </div>
+  </div>
+  </transition>
     <!--modal-->
     <dialog v-if="Object.keys(cart).length > 0" id="checkoutmodal" class="modal">
       <div class="modal-box">
@@ -136,6 +140,7 @@ import toast from '@/components/widgets/toast.vue'
 
 const payment = ref('')
 const isDataGet = ref(false)
+const isLoading = ref(true)
 
 const isFormClosed = ref(false)
 const now = DateTime.now().setZone('Asia/Taipei')
@@ -156,7 +161,7 @@ const fetchMenus = async() => {
   if (error) {
     console.log(error)
   }else{
-    isDataGet.value = true
+    isLoading.value = false
     const closeTime = DateTime.fromISO(data.closeTime).setLocale('zh-tw')
     warningMsg.value = `點餐截止時間:  ${closeTime.toFormat('T')}`
     return setComboMeal(data)

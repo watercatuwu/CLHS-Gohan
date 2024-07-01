@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-[100dvh]">
-    <div class="container mx-auto p-2 space-y-2">
+    <div class="container mx-auto p-4 space-y-2">
       <cart />
     </div>
   </div>
