@@ -9,7 +9,10 @@
                     <button class="btn btn-secondary w-full" @click="showbgmodal">設定</button>
                     <dialog id="bgmodal" class="modal">
                         <div class="modal-box space-y-2">
-                            <h3 class="text-lg">背景圖片</h3>
+                            <h3 class="text-lg">
+                                背景圖片
+                                <span class="badge badge-warning"><4MB</span>
+                            </h3>
                             <input id="bginput" type="file" accept="image/png, image/jpeg, image/gif" class="file-input file-input-bordered w-full" />
                             <button @click="delbg" class="btn btn-error w-full">清除</button>
                             <div class="py-2">
@@ -21,7 +24,11 @@
                             </div>
                             <div class="flex justify-between py-2 items-center">
                                 <h3 class="text-lg">卡片毛玻璃</h3>
-                                <input v-model="cardglass" type="checkbox"  class="checkbox mx-4" />
+                                <input v-model="cardglass" type="checkbox" class="toggle mx-4" />
+                            </div>
+                            <div class="flex justify-between py-2 items-center">
+                                <h3 class="text-lg">贊助商廣告</h3>
+                                <input v-model="sponsorsToggle" type="checkbox" class="toggle mx-4" />
                             </div>
                             <div class="modal-action">
                                 <form method="dialog" class="space-x-2">
@@ -48,7 +55,8 @@ const toastRef = ref(null)
 
 const cardopacity = ref(parseInt(localStorage.getItem('cardopacity'))||50)
 const oldcardopacity = ref(parseInt(localStorage.getItem('cardopacity'))||50)
-const cardglass = ref(localStorage.getItem('cardglass')|| false)
+const cardglass = ref(localStorage.getItem('cardglass')||false)
+const sponsorsToggle = ref(localStorage.getItem('sponsorsToggle') || true)
 
 const showbgmodal = () => {
     document.getElementById('bgmodal').showModal()
@@ -63,20 +71,26 @@ const delbg = () => {
 const setbg = () => {
     const img = document.getElementById('bginput').files[0]
     if (img){
-        const reader = new FileReader();
+        if (img.size < 4000000){
+            const reader = new FileReader();
 
-        reader.onload = function(event) {
-            const base64String = event.target.result;
-            localStorage.setItem('img', base64String)
-            const bg = document.querySelector('#bg')
-            bg.style.backgroundImage = `url(${base64String})`
-        };
+            reader.onload = function(event) {
+                const base64String = event.target.result;
+                localStorage.setItem('img', base64String)
+                const bg = document.querySelector('#bg')
+                bg.style.backgroundImage = `url(${base64String})`
+            };
 
-        reader.readAsDataURL(img)
+            reader.readAsDataURL(img)
+        } else {
+            toastRef.value.showToast('圖片大小超過上限', 'alert-error')
+            return
+        }
     }
 
     localStorage.setItem('cardopacity', cardopacity.value)
     localStorage.setItem('cardglass', cardglass.value)
+    localStorage.setItem('sponsorsToggle', sponsorsToggle.value)
     //cards
     const cards = document.querySelectorAll('.card')
     cards.forEach((card) => {

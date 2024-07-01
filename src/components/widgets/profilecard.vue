@@ -57,7 +57,6 @@ const toastRef = ref(null)
 
 onMounted(async () => {
   avatarUrl.value = await getUserAvatar()
-  console.log(avatarUrl.value)
 })
 
 const chooseAvatar = () => {

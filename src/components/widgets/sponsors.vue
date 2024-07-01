@@ -1,5 +1,5 @@
 <template>
-    <div class="card bg-base-300 shadow-md">
+    <div v-if="props.disabled" class="card bg-base-300 shadow-md">
         <figure class="max-h-32 bg-base-300">
             <img :src="props.image" class="h-full w-full object-cover max-h-32" />
         </figure>
@@ -21,7 +21,8 @@
 </template>
 
 <script setup>
-import {ref, defineProps} from 'vue'
+import {onMounted, ref} from 'vue'
+
 import icon from '@/components/widgets/icon.vue'
 
 const props = defineProps({
@@ -31,5 +32,6 @@ const props = defineProps({
     content: String,
     link: String,
     linkTitle: String,
+    disabled: Boolean,
 })
 </script>
