@@ -136,7 +136,7 @@ export default {
           '--navbar-padding': '.5rem',
           '--border-btn': '1px',
         },
-        'Discord':{
+        'Discord': {
           "primary": "#5865F2",               // Discord Blue
           "primary-focus": "#4752C4",         // Darker Blue for focus state
           "primary-content": "#FFFFFF",       // White text on primary
@@ -172,7 +172,7 @@ export default {
         
           "--btn-text-case": "none",          // Default text case
           "--navbar-padding": "1rem",         // More padding for navbar
-          "--border-btn": "1px",              // Border thickness for buttons
+          "--border-btn": "1px"               // Border thickness for buttons
         },
         'Vercel':{
           "primary": "#000000",               // Primary color (black)
@@ -249,8 +249,46 @@ export default {
           "--btn-text-case": "uppercase",
           "--navbar-padding": ".5rem",
           "--border-btn": "1px"
-        }
-      },
+        },
+        '壢中藍': {
+           'primary' : '#004cff',
+           'primary-focus' : '#0a47d6',
+           'primary-content' : '#d4daf2',
+
+           'secondary' : '#b54936',
+           'secondary-focus' : '#a73b2f',
+           'secondary-content' : '#d4daf2',
+
+           'accent' : '#109ec1',
+           'accent-focus' : '#1185a2',
+           'accent-content' : '#d4daf2',
+
+           'neutral' : '#122031',
+           'neutral-focus' : '#1d2e44',
+           'neutral-content' : '#d4daf2',
+
+           'base-100' : '#1a1c1e',
+           'base-200' : '#0A131A',
+           'base-300' : '#00010D',
+           'base-content' : '#d4daf2',
+
+           'info' : '#2dcceb',
+           'success' : '#1ebe78',
+           'warning' : '#c5e137',
+           'error' : '#da4534',
+
+          '--rounded-box': '.5rem',          
+          '--rounded-btn': '.5rem',        
+          '--rounded-badge': '1.9rem',      
+
+          '--animation-btn': '.25s',       
+          '--animation-input': '.2s',       
+
+          '--btn-text-case': 'lowercase',   
+          '--navbar-padding': '.5rem',      
+          '--border-btn': '1px',            
+        },
+      }
     ],
   },
   plugins: [daisyui],

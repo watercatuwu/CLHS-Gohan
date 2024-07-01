@@ -1,17 +1,9 @@
 <template>
   <warning :msg="warningMsg" />
-  <div class="card bg-base-200 shadow-md border-gray-400">
-    <div class="card-body">
-      <div class="flex flex-row justify-between items-center">
-        <button :disabled="sysNow.toISODate() === dayselect.toISODate()" @click="prevDay" class="btn btn-neutral btn-sm"><<</button>
-        <h2 class="text-xl font-bold">{{ dayselect.setLocale('zh-tw').toFormat('MM-dd ccc') }}</h2>
-        <button :disabled="sysNow.endOf('week').toISODate() === dayselect.toISODate()" @click="nextDay" class="btn btn-neutral btn-sm">>></button>
-      </div>
-    </div>
-  </div>
+    <dayselect @update="updateProduct" />
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
-            <h2 class="card-title text-xl"><carticon />購物車<span class="badge badge-primary">{{Object.keys(cart).length}}</span></h2>
+            <h2 class="card-title text-xl"><icon name="cart" />購物車<span class="badge badge-primary">{{Object.keys(cart).length}}</span></h2>
             <div v-if="Object.keys(cart).length > 0" class="overflow-auto max-h-96">
                 <table class="table">
                   <thead>
@@ -48,7 +40,7 @@
     </div>
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
-            <h2 class="card-title text-xl"><shopicon />商品</h2>
+            <h2 class="card-title text-xl"><icon name="store" />商品</h2>
             <h2 v-if="isDataGet && !products.isOpenToday" class="card-title text-xl">本日放假</h2>
             <div v-if="isDataGet && products.isOpenToday" class="overflow-x-auto">
                 <table class="table">
@@ -127,11 +119,10 @@
 </template>
 
 <script setup>
-import carticon from '@/assets/icons/cart.svg'
-import shopicon from '@/assets/icons/shopping.svg'
-
+import icon from '@/components/widgets/icon.vue'
 import warning from '@/components/widgets/warning.vue'
-import { cart } from '@/reactive/cart'
+import dayselect from '@/components/widgets/dayselect.vue'
+import { cart, selectedDay } from '@/reactive/cart'
 
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
@@ -154,13 +145,6 @@ const warningMsg = ref('')
 
 isFormClosed.value =  now.hour < 13 && now.hour > 10 ? true : false
 
-const dayselect = ref()
-const dayselectStroge = JSON.parse(sessionStorage.getItem('dayselect'))
-if(dayselectStroge){
-  dayselect.value = DateTime.fromISO(dayselectStroge) //透過儲存的iso字串轉換為DateTime物件
-}else{
-  dayselect.value = DateTime.fromISO('2024-06-20')
-}
 const products = ref({})
 
 onMounted(async() => {
@@ -168,7 +152,7 @@ onMounted(async() => {
 })
 
 const fetchMenus = async() => {
-  const {data, error} = await supabase.from('menus').select('*').eq('date', dayselect.value.toISODate()).single()
+  const {data, error} = await supabase.from('menus').select('*').eq('date', selectedDay.day.toISODate()).single()
   if (error) {
     console.log(error)
   }else{
@@ -179,17 +163,8 @@ const fetchMenus = async() => {
   }
 }
 
-const prevDay = async() =>{
+const updateProduct = async() =>{
   clearCart()
-  dayselect.value = dayselect.value.minus({days: 1})
-  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate()))
-  products.value = await fetchMenus()
-}
-
-const nextDay = async() =>{
-  clearCart()
-  dayselect.value = dayselect.value.plus({days: 1})
-  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate()))
   products.value = await fetchMenus()
 }
 
@@ -221,8 +196,8 @@ const checkoutsend = async () => {
   //儲存資料至orders
   const userData = JSON.parse(sessionStorage.getItem('userData'))
   const { error } = await supabase.from('orders').upsert({
-    id: dayselect.value.toISODate() + '-' + userData.auth.id,
-    date: dayselect.value.toISODate(),
+    id: selectedDay.day.toISODate() + '-' + userData.auth.id,
+    date: selectedDay.day.toISODate(),
     uuid: userData.auth.id,
     class: userData.data.class,
     number: userData.data.number,

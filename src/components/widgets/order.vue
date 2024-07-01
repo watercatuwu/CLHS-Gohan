@@ -1,13 +1,5 @@
 <template>
-  <div class="card bg-base-200 shadow-md border-gray-400">
-    <div class="card-body">
-      <div class="flex flex-row justify-between items-center">
-        <button :disabled="sysNow.toISODate() === dayselect.toISODate()" @click="prevDay" class="btn btn-neutral btn-sm"><<</button>
-        <h2 class="text-xl font-bold">{{ dayselect.setLocale('zh-tw').toFormat('MM-dd ccc') }}</h2>
-        <button :disabled="sysNow.endOf('week').toISODate() === dayselect.toISODate()" @click="nextDay" class="btn btn-neutral btn-sm">>></button>
-      </div>
-    </div>
-  </div>
+    <dayselect @update="updateOrders" />
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <div class="flex justify-between">
@@ -61,7 +53,10 @@ import checkcircleicon from '@/assets/icons/check-circle.svg'
 import { ref, onMounted } from 'vue'
 import { DateTime } from 'luxon'
 import { supabase } from '@/supabase'
+import { selectedDay } from '@/reactive/cart'
+import { priceSum } from '@/utils/utils'
 
+import dayselect from '@/components/widgets/dayselect.vue'
 import toast from '@/components/widgets/toast.vue'
 
 const now = DateTime.now().setZone('Asia/Taipei')
@@ -69,33 +64,17 @@ const cantCancel = ref(true)
 cantCancel.value =  now.hour < 13 && now.hour > 10 ? true : false
 
 const sysNow = now.hour>=13 ? now.plus({days: 1}) : now
-const dayselect = ref()
-const dayselectStroge = JSON.parse(sessionStorage.getItem('dayselect'))
-
-if(dayselectStroge){
-  dayselect.value = DateTime.fromISO(dayselectStroge) //透過儲存的iso字串轉換為DateTime物件
-}else{
-  dayselect.value = sysNow
-}
 
 const orders = ref({})
 
-const prevDay = async() =>{
-  dayselect.value = dayselect.value.minus({days: 1})
-  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate()))
-  await fetchOrders()
-}
-
-const nextDay = async() =>{
-  dayselect.value = dayselect.value.plus({days: 1})
-  sessionStorage.setItem('dayselect', JSON.stringify(dayselect.value.toISODate()))
+const updateOrders = async () => {
   await fetchOrders()
 }
 
 async function fetchOrders() {
   const userData = JSON.parse(sessionStorage.getItem('userData'))
   const { data, error } = await supabase.from('orders').select('*')
-  .eq('date', dayselect.value.toISODate())
+  .eq('date', selectedDay.day.toISODate())
   .eq('uuid', userData.auth.id)
   .single()
   if (error) {
@@ -122,7 +101,7 @@ const cancelOrders = async () => {
     const userData = JSON.parse(sessionStorage.getItem('userData'))
     cantCancel.value = true
     orders.value = {}
-    const { error } = await supabase.from('orders').delete().eq('id', dayselect.value.toISODate()+'-'+userData.auth.id)
+    const { error } = await supabase.from('orders').delete().eq('id', selectedDay.day.toISODate()+'-'+userData.auth.id)
   if(error){
     console.error(error)
     showToast(error, 'alert-error')
@@ -134,13 +113,5 @@ const cancelOrders = async () => {
 const toastRef = ref(null)
 function showToast(msg, type) {
   toastRef.value.showToast(msg, type)
-}
-
-const priceSum = (arr) =>{
-    let sum = 0
-    for (let i = 0; i < arr.length; i++) {
-        sum += arr[i].price
-    }
-    return sum
 }
 </script>

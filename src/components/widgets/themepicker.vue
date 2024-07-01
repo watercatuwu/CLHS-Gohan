@@ -23,5 +23,8 @@ const themelist = [
     'Discord',
     'Vercel',
     'Vercel-black',
+    'Zorin',
+    'Zorin-dark',
+    '壢中藍'
 ]
 </script>
