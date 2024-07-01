@@ -14,6 +14,7 @@ const setTheme = (theme) => {
 }
 
 const themelist = [
+    '壢中藍',
     'Husky',
     'Mocha',
     'Cappuccino',
@@ -23,8 +24,5 @@ const themelist = [
     'Discord',
     'Vercel',
     'Vercel-black',
-    'Zorin',
-    'Zorin-dark',
-    '壢中藍'
 ]
 </script>
