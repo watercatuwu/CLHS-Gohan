@@ -29,10 +29,6 @@
                 <span>{{link.name}}</span>
               </RouterLink>
             </li>
-            <div class="divider"></div>
-            <li>
-              <themepickerDrawer />
-            </li>
           </ul>
           <div v-if="sponsorsData.length>0" class="fixed bottom-0 p-4 w-80">
             <sponsors
@@ -51,7 +47,6 @@
 <script setup>
 import icon from '@/components/widgets/icon.vue'
 import sponsors from '@/components/widgets/sponsorscard.vue'
-import themepickerDrawer from '@/components/widgets/themepickerDrawer.vue';
 
 import { supabase } from '@/supabase'
 import { ref,onMounted,watch } from 'vue';
