@@ -1,6 +1,4 @@
 <template>
-  <transition name="fade">
-  <div class='space-y-2' v-if="!isLoading">
     <warning :msg="warningMsg" />
     <dayselect @update="updateProduct" />
     <div class="card bg-base-200 shadow-md border-gray-400">
@@ -68,8 +66,6 @@
             </div>
         </div>
     </div>
-  </div>
-  </transition>
     <!--modal-->
     <dialog v-if="Object.keys(cart).length > 0" id="checkoutmodal" class="modal">
       <div class="modal-box">

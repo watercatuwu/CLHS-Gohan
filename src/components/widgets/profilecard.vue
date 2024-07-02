@@ -25,7 +25,7 @@
             </div>
           </div>
           <div class='flex flex-col gap-0'>
-            <p class="text-gray-500">{{userData.auth.email}}</p>
+            <p class="opacity-50">{{userData.auth.email}}</p>
           </div>
           <div class="flex gap-2">
             <div v-for="(tag, index) in userData.data.tags" class="badge badge-primary text-base">{{tag}}</div>
@@ -133,7 +133,7 @@ const uploadAvatar = async () => {
 const copyUUID = () => {
   const userUID = userData.auth.id
   navigator.clipboard.writeText(userUID)
-    .then(() => toastRef.value.showToast(`複製成功(${userUID})`), 'alert-success')
+    .then(() => toastRef.value.showToast('複製成功'), 'alert-success')
     .catch(() => toastRef.value.showToast('複製失敗'), 'alert-error')
 }
 </script>

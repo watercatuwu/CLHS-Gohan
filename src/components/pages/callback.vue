@@ -19,6 +19,8 @@ onMounted(async() => {
   let data = {}
   // 檢查是否登入
   if (user) {
+    const name = user.user_metadata.name
+    const classAndNumber = name.slice(0, 6).split('.')
     //檢查用戶資料是否存在
     const { data: existedData, error: fetchError } = await supabase
       .from('users')
@@ -27,10 +29,9 @@ onMounted(async() => {
       .single()
 
     if (fetchError){
+      console.log('new')
       //建立新用戶
       if (fetchError.code === 'PGRST116' ) {
-        const name = user.user_metadata.name
-        const classAndNumber = name.slice(0, 6).split('.')
         const { error } = await supabase.from('users').insert([{
           uuid: user.id,
           class: classAndNumber[0],
@@ -61,15 +62,49 @@ onMounted(async() => {
         router.push('/')
         return
       }
+
+      data = newData
+    } else if(existedData.class!==classAndNumber[0] || existedData.number!==classAndNumber[1]) {
+      console.log('update')
+      //檢查用戶資料是否更改(class&number)
+      const { error:updateError } = await supabase.from('users')
+        .update({
+          class: classAndNumber[0],
+          number: classAndNumber[1]
+        })
+        .eq('uuid', user.id)
+
+      if (updateError){
+        console.log(updateError)
+        router.push('/')
+        return
+      }
+      //再次取得資料
+      const { data: newData, error:fetchError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('uuid', user.id)
+      .single()
+
+      if (fetchError) {
+        console.log(fetchError)
+        router.push('/')
+        return
+      }
+
       data = newData
     } else {
+      //用戶資料存在且無變動
+      console.log('existed')
       data = existedData
     }
+
     const userData = {
       auth: user,
       data: data
     }
     sessionStorage.setItem('userData', JSON.stringify(userData))
+
     router.push('/profile')
   } else {
     router.push('/')

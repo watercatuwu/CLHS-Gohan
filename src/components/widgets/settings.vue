@@ -33,7 +33,7 @@
                             <div class="modal-action">
                                 <form method="dialog" class="space-x-2">
                                     <button class="btn">關閉</button>
-                                    <button @click="setbg" class="btn btn-success">送出</button>
+                                    <button @click="saveSettings" class="btn btn-success">送出</button>
                                 </form>
                             </div>
                         </div>
@@ -50,6 +50,7 @@ import toast from '@/components/widgets/toast.vue'
 import themepicker from '@/components/widgets/themepicker.vue'
 
 import { ref } from 'vue'
+import emitter from '@/bus'
 
 const toastRef = ref(null)
 
@@ -68,7 +69,7 @@ const delbg = () => {
     bg.style.backgroundImage = ''
 }
 
-const setbg = () => {
+const saveSettings = () => {
     const img = document.getElementById('bginput').files[0]
     if (img){
         if (img.size < 4000000){
@@ -98,7 +99,7 @@ const setbg = () => {
         card.classList.add(`bg-opacity-${cardopacity.value}`)
         card.classList.toggle('backdrop-blur-sm', cardglass.value)
     })
-
+    emitter.emit('settingsUpdate')
     toastRef.value.showToast('設定已儲存', 'alert-success')
 }
 </script>

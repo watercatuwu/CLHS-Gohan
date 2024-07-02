@@ -27,7 +27,6 @@ const prevDay = () =>{
 
 const nextDay = () =>{
   selectedDay.day = selectedDay.day.plus({days: 1})
-  console.log(selectedDay.day.toISODate())
   emit('update')
 }
 </script>

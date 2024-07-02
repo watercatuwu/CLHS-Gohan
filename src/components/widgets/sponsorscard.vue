@@ -1,5 +1,5 @@
 <template>
-    <div v-if="props.disabled" class="card bg-base-300 shadow-md">
+    <div v-if="sponsorsToggle" class="card bg-base-300 shadow-md">
         <figure class="max-h-32 bg-base-300">
             <img :src="props.image" class="h-full w-full object-cover max-h-32" />
         </figure>
@@ -22,6 +22,7 @@
 
 <script setup>
 import {onMounted, ref} from 'vue'
+import emitter from '@/bus'
 
 import icon from '@/components/widgets/icon.vue'
 
@@ -32,6 +33,24 @@ const props = defineProps({
     content: String,
     link: String,
     linkTitle: String,
-    disabled: Boolean,
+})
+
+const sponsorsToggle = ref(false)
+
+const getSponsorsToggle = () => {
+  const localToggle = JSON.parse(localStorage.getItem('sponsorsToggle'))
+  if (localToggle!==null && localToggle){
+    sponsorsToggle.value = true
+  } else {
+    sponsorsToggle.value = false
+  }
+}
+
+onMounted(()=>{
+    getSponsorsToggle()
+})
+
+emitter.on('settingsUpdate',()=>{
+    getSponsorsToggle()
 })
 </script>

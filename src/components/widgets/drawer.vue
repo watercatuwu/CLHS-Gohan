@@ -46,8 +46,7 @@
 </template>
 <script setup>
 import icon from '@/components/widgets/icon.vue'
-import sponsors from '@/components/widgets/sponsors.vue'
-import drawer from '@/components/widgets/drawer.vue';
+import sponsors from '@/components/widgets/sponsorscard.vue'
 
 import { supabase } from '@/supabase'
 import { ref,onMounted,watch } from 'vue';
@@ -81,21 +80,18 @@ onMounted(async () => {
   avatarUrl.value = await getUserAvatar()
   sponsorsData.value = await getSponsors()
   randomSponsors()
-  getSponsorsToggle()
 })
 
-watch(() => isOpen.value, () => {
-    getSponsorsToggle()
-});
+watch(() => route.path, (newroute)=>{
+  currentPath.value = newroute
+})
 
-const getSponsorsToggle = () => {
-  const localToggle = JSON.parse(localStorage.getItem('sponsorsToggle'))
-  if (localToggle!==null && localToggle){
-    sponsorsToggle.value = true
-  } else {
-    sponsorsToggle.value = false
+watch(() => isOpen.value, (isOpen) => {
+  //當抽屜開啟
+  if (isOpen) {
+    randomSponsors()
   }
-}
+});
 
 const getSponsors = async () => {
   const { data, error } = await supabase.from('sponsors').select().order('id')

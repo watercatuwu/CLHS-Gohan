@@ -1,7 +1,7 @@
 <template>
   <div v-if="userData" class="navbar bg-base-100 sticky top-0 z-50">
     <div class="navbar-start">
-      <label @click="randomSponsors" for="maindrawer" class="btn btn-ghost btn-circle drawer-button"><icon name="bar"></icon></label>
+      <label id="darwerbtn" for="maindrawer" class="btn btn-ghost btn-circle drawer-button"><icon name="bar"></icon></label>
       <drawer />
     </div>
   <div class="navbar-end gap-2">

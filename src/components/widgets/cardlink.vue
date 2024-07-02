@@ -1,5 +1,5 @@
 <template>
-      <div class="card bg-base-200 shadow-md border-gray-400 cursor-point transition duration-300 ease-in-out hover:bg-base-300">
+      <div class="card bg-base-200 shadow-md border-gray-400 cursor-point transition duration-300 ease-in-out hover:backdrop-brightness-50">
         <router-link :to="props.to">
         <div class="card-body">
             <div class="flex justify-between items-center">

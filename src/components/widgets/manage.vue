@@ -1,4 +1,5 @@
 <template>
+    <dayselect @update="updateDatas" />
     <div class="card bg-base-200 shadow-md border-gray-400">
       <figure class="w-full h-3 bg-primary"></figure>
       <div class="card-body">
@@ -22,8 +23,8 @@
         <div class="dropdown">
             <div tabindex="0" role="button"  class="btn m-1">更換表格類型</div>
             <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-300 rounded-box w-52">
-            <li @click="tableType = 'stu'"><a>學生排序</a></li>
-            <li @click="ordersCount"><a>餐點排序</a></li>
+            <li @click="stuOrder"><a>學生排序</a></li>
+            <li @click="foodOrder"><a>餐點排序</a></li>
             </ul>
         </div>
     </div>
@@ -48,7 +49,7 @@
             </table>
 
             <!--foodtable-->
-            <table v-if="tableType == 'food'" class="table">
+            <table v-else class="table">
                 <thead>
                   <tr>
                     <th></th>
@@ -74,9 +75,10 @@
 import { ref, onMounted } from 'vue'
 import { DateTime } from 'luxon';
 import { supabase } from '@/supabase'
+import { priceSum } from '@/utils/utils'
+import dayselect from '@/components/widgets/dayselect.vue'
+import { selectedDay } from '@/reactive/cart'
 
-const now = DateTime.now().setZone('Asia/Taipei')
-const sysNow = now.hour>=13 ? now.plus({days: 1}) : now
 const products = ref([])
 
 const table = ref([])
@@ -85,27 +87,31 @@ const tableType = ref("stu")
 const fetchDatas = async () => {
   const userData = JSON.parse(sessionStorage.getItem('userData'))
   const { data, error } = await supabase.from('orders').select('*')
-  .eq('date', sysNow.toISODate()).eq('class', userData.data.class)
+  .eq('date', selectedDay.day.toISODate()).eq('class', userData.data.class)
   if (error) {
     console.log(error)
     return
   }
   table.value = data
-  console.log(data)
 }
 
 onMounted(() => {
   fetchDatas()
 })
 
+const updateDatas = async() => {
+  await fetchDatas()
+  ordersCount()
+}
+
 const getordercode = (order) => {
     const arr = []
     for(let food of order){
-        if (food.addrice){
+      if (food.addrice){
         arr.push(food.code+"+")
-        }else{
+      }else{
         arr.push(food.code)
-        }
+      }
     }
     return arr.join(',') // 陣列轉字串並返回
 }
@@ -126,20 +132,19 @@ const getfoodtotalprice = (table) => {
     return sum
 }
 
-const priceSum = (arr) =>{
-    let sum = 0
-    for (let i = 0; i < arr.length; i++) {
-        sum += arr[i].price
-    }
-    return sum
+const stuOrder = () =>{
+  tableType.value = "stu"
+}
+
+const foodOrder = () =>{
+  tableType.value = "food"
+  ordersCount()
 }
 
 const ordersCount = () => {
     const obj = {}
-    console.log(table.value)
     for (let t of table.value) {
       t.order.forEach((orderfood) => {
-        console.log(orderfood)
         if (!obj.hasOwnProperty(orderfood.code)) {
           obj[orderfood.code] = orderfood
           obj[orderfood.code].addriceAmount = 0
@@ -153,7 +158,5 @@ const ordersCount = () => {
       })
     }
     products.value = obj
-    tableType.value = "food"
-    console.log(products.value)
 }
 </script>
