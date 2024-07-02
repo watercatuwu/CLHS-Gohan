@@ -1,4 +1,6 @@
 import daisyui from "daisyui"
+import tailwindScrollbar from 'tailwind-scrollbar';
+
 export default {
   content: ['./index.html','./src/**/*.{vue,js,ts}'],
   safelist:[
@@ -291,6 +293,6 @@ export default {
       }
     ],
   },
-  plugins: [daisyui],
+  plugins: [daisyui, tailwindScrollbar,],
 }
 

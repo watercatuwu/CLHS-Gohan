@@ -1,7 +1,7 @@
 <template>
       <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
-            <h2 class="card-title text-xl"><settingsicon />個人設定</h2>
+            <h2 class="card-title text-xl"><icon name="settings" />個人設定</h2>
                 <div class="grid grid-cols-2 gap-4 items-center">
                     <h2 class="text-xl">主題</h2>
                     <themepicker />
@@ -44,20 +44,20 @@
       <toast ref="toastRef"/>
 </template>
 <script setup>
-import settingsicon from '@/assets/icons/settings.svg'
-import trashbinicon from '@/assets/icons/trashbin.svg'
 import toast from '@/components/widgets/toast.vue'
 import themepicker from '@/components/widgets/themepicker.vue'
+import icon from '@/components/widgets/icon.vue'
 
 import { ref } from 'vue'
 import emitter from '@/bus'
+import { getLocalStorageItem } from '@/utils/utils'
 
 const toastRef = ref(null)
 
-const cardopacity = ref(parseInt(localStorage.getItem('cardopacity'))||50)
-const oldcardopacity = ref(parseInt(localStorage.getItem('cardopacity'))||50)
-const cardglass = ref(localStorage.getItem('cardglass')||false)
-const sponsorsToggle = ref(localStorage.getItem('sponsorsToggle') || true)
+const cardopacity = ref(getLocalStorageItem('cardopacity', 100))
+const oldcardopacity = ref(getLocalStorageItem('cardopacity', 100))
+const cardglass = ref(getLocalStorageItem('cardglass', false))
+const sponsorsToggle = ref(getLocalStorageItem('sponsorsToggle', true))
 
 const showbgmodal = () => {
     document.getElementById('bgmodal').showModal()
@@ -91,6 +91,7 @@ const saveSettings = () => {
 
     localStorage.setItem('cardopacity', cardopacity.value)
     localStorage.setItem('cardglass', cardglass.value)
+    console.log(typeof cardglass.value)
     localStorage.setItem('sponsorsToggle', sponsorsToggle.value)
     //cards
     const cards = document.querySelectorAll('.card')

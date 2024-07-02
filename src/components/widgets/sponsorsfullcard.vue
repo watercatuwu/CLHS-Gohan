@@ -42,11 +42,7 @@ onMounted(()=>{
 
 const getSponsorsToggle = () => {
   const localToggle = JSON.parse(localStorage.getItem('sponsorsToggle'))
-  if (localToggle!==null && localToggle){
-    sponsorsToggle.value = true
-  } else {
-    sponsorsToggle.value = false
-  }
+  sponsorsToggle.value = localToggle!==false //直接返回boolean
 }
 
 const getSponsors = async () => {

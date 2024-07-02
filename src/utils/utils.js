@@ -13,3 +13,8 @@ export function getRandom(min,max){
 export function checkImage(url) {
   return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
 }
+
+export function getLocalStorageItem(key, defaultValue) {
+  const item = localStorage.getItem(key);
+  return item !== null ? JSON.parse(item) : defaultValue;
+}
