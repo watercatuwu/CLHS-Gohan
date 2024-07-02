@@ -34,6 +34,7 @@ onMounted(async() => {
       if (fetchError.code === 'PGRST116' ) {
         const { error } = await supabase.from('users').insert([{
           uuid: user.id,
+          name: name,
           class: classAndNumber[0],
           number: classAndNumber[1],
           stuid: user.email.slice(1,7),

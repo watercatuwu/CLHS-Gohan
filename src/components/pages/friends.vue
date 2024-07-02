@@ -1,17 +1,15 @@
 <template>
     <div class="min-h-[100dvh]">
         <div class="container mx-auto p-2 space-y-2">
-            <friendsorders/>
-            <annouce />
+            <friends />
         </div>
     </div>
 </template>
 
 <script setup>
-import annouce from '@/components/widgets/annouce.vue';
+import friends from '@/components/widgets/friends.vue';
 
 import { onMounted } from 'vue'
-import friendsorders from '@/components/widgets/friendsorders.vue';
 
 onMounted(() => {
   const cardopacity = parseInt(localStorage.getItem('cardopacity'))

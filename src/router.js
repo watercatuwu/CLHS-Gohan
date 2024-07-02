@@ -10,6 +10,7 @@ import manage from './components/pages/manage.vue'
 import callback from './components/pages/callback.vue'
 import NotFound from '@/components/pages/404.vue'
 import test from '@/components/pages/test.vue'
+import friends from '@/components/pages/friends.vue'
 
 const routes = [
   { path: '/', name: 'index', component: index, meta: { title:'CLHS Gohan | 非官方中大壢中熱食部點餐系統', navbar: false } },
@@ -21,6 +22,7 @@ const routes = [
   { path: '/:pathMatch(.*)*', name: '404', component: NotFound, meta: { title: '404 | CLHS Gohan', requiresAuth: true } },
   { path: '/callback', name: 'callback', component: callback, meta: { title: '登入中...', navbar: false } },
   { path: '/test', name: 'test', component: test, meta: { title: '測試 | CLHS Gohan', navbar: false } },
+  { path: '/friends', name: 'friends', component: friends, meta: { title: '好友 | CLHS Gohan', navbar: true } },
 ]
 
 const router = createRouter({

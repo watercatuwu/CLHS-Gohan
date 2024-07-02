@@ -2,9 +2,7 @@
     <div class="card bg-base-200 shadow-md border-gray-400">
       <figure class="w-full h-3 bg-primary"></figure>
         <div class="card-body">
-            <div class="avatar">
-            </div>
-            <h2 class="card-title text-xl"><bullhornicon /> 公告</h2>
+            <h2 class="card-title text-xl"><icon name="bullhorn" /> 公告</h2>
             <div v-if="isDataGet" v-for="(element, index) in annoucements"  class="collapse collapse-arrow">
                 <input type="radio" name="my-collapse" :checked="index===0" />
                 <div class="collapse-title text-xl font-bold">
@@ -23,10 +21,11 @@
 </template>
 
 <script setup>
-import bullhornicon from '@/assets/icons/bullhorn.svg'
 import { ref, onMounted } from 'vue'
 import { DateTime } from 'luxon'
 import { supabase } from '@/supabase'
+
+import icon from '@/components/widgets/icon.vue'
 
 const annoucements = ref([])
 const isDataGet = ref(true)

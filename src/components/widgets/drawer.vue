@@ -23,7 +23,7 @@
             </div>
             </li>
             </RouterLink>
-            <li @click="isOpen = !isOpen" v-for="link in links" class="transition transform ease-in-out duration-300 scale-100 hover:scale-105 active:scale-100">
+            <li @click="isOpen = !isOpen" v-for="link in links" class="text-lg transition transform ease-in-out duration-300 scale-100 hover:scale-105 active:scale-100">
               <RouterLink :to="link.path" :class="{'bg-primary': link.path === currentPath, 'text-primary-content': link.path === currentPath}">
                 <icon :name="link.icon" />
                 <span>{{link.name}}</span>
@@ -70,7 +70,8 @@ const links = [
   { name: '商店', path: '/shop', icon: 'store' },
   { name: '訂單', path: '/order', icon: 'receipt' },
   { name: '個人資料', path: '/profile', icon: 'user' },
-  { name: '統計資料', path: '/manage', icon: 'chart' },
+  { name: '好友', path: '/friends', icon: 'users' },
+  { name: '班級統計', path: '/manage', icon: 'chart' },
 ]
 
 const avatarUrl = ref('')
