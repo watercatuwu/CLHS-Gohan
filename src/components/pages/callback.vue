@@ -107,7 +107,7 @@ onMounted(async() => {
     }
     sessionStorage.setItem('userData', JSON.stringify(userData))
 
-    router.push('/profile')
+    router.push('/home')
   } else {
     router.push('/')
   }
