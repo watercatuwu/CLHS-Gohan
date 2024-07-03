@@ -1,4 +1,5 @@
 import { supabase } from '@/supabase'
+import { DateTime } from 'luxon'
 
 export const getUserAvatar = async (uuid=null) => {
     const userData = JSON.parse(sessionStorage.getItem('userData'))
@@ -50,4 +51,37 @@ export const getFriend = async() => {
     }
   }
   return friendshipsUsers
+}
+
+export const getFriendOrders = async() => {
+  const userData = JSON.parse(sessionStorage.getItem('userData'))
+  const now = DateTime.now().setZone('Asia/Taipei')
+  const prevweek = now.minus({ days: 7 })
+  const nextweek = now.plus({ days: 7 })
+
+  const {data:friendships,error:friendshipsError} = await supabase
+    .from('friendships')
+    .select('frienduser_id')
+    .eq('user_id', userData.auth.id)
+
+  if (friendshipsError){
+    console.log(friendshipsError)
+    return
+  }
+  const friendUUIDs = friendships.map(friendship => friendship.frienduser_id);
+
+  const { data:friendshipsOrders, error:friendshipsOrdersError } = await supabase
+    .from('orders')
+    .select()
+    .in('uuid', friendUUIDs)
+    .lte('date', nextweek.toISODate())
+    .gt('date', prevweek.toISODate())
+    .order('date', { ascending: false })
+
+  if(friendshipsOrdersError){
+    console.log(friendshipsOrdersError)
+    return
+  }
+
+  return friendshipsOrders
 }
