@@ -13,6 +13,10 @@ export default defineConfig({
   },
   plugins: [vue(), svgLoader(),
     VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+      },
       cachingStrategy: 'NetworkOnly',
       manifest: {
       name: 'CLHS Gohan',

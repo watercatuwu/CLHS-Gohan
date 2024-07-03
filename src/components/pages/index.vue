@@ -39,6 +39,7 @@
     <aside class="items-center grid-flow-col">
       <p>CLHS Gohan © 2024 - All right reserved.</p>
       <a href="https://github.com/watercatuwu/clhs-gohan/blob/main/privacy.md" class="link" target="_blank" rel="noopener noreferrer">隱私權政策</a>
+      <p>v0.0.4</p>
     </aside>
   </footer>
 </template>
