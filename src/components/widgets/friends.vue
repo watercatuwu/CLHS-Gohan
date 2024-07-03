@@ -9,20 +9,20 @@
           <div class="overflow-x-auto">
             <table v-if='friends.length > 0' class="table">
               <tbody>
-                <tr v-for="(user,index) in friends" class="h-24 text-lg">
+                <tr v-for="(friend,index) in friends" class="h-24 text-lg">
                   <th class="w-24">
-                    <div v-if="user.avatar!==null" class="avatar">
-                      <div class="w-12 rounded-full">
-                        <img :src="user.avatarurl" />
+                    <div v-if="friend.avatar!==null" class="avatar">
+                      <div class="w-20 rounded-full">
+                        <img :src="friend.avatarurl" />
                       </div>
                     </div>
                     <div v-else class="avatar placeholder">
-                      <div class="bg-neutral text-neutral-content w-12 rounded-full">
-                        <span class="text-xl">{{user.name.slice(-1)}}</span>
+                      <div class="bg-neutral text-neutral-content w-20 rounded-full">
+                        <span class="text-xl">{{friend.name.slice(-1)}}</span>
                       </div>
                     </div>
                   </th>
-                  <td class="text-xl font-bold whitespace-nowrap">{{user.name}}</td>
+                  <td class="text-xl font-bold whitespace-nowrap">{{friend.name}}</td>
                   <td class="text-end">
                     <button class="btn btn-circle btn-ghost" @click="showusermodal(index)">
                       <icon name="dot-vertical" />
@@ -50,17 +50,17 @@
           <div class="flex item-center gap-2">
             <div class="mt-2">
               <div v-if="searchResult.avatar!==null" class="avatar">
-                <div class="w-16 rounded-full">
+                <div class="w-20 rounded-full">
                   <img :src="searchResult.avatarurl" />
                 </div>
               </div>
               <div v-else class="avatar placeholder">
-                <div class="bg-neutral text-neutral-content w-16 rounded-full">
+                <div class="bg-neutral text-neutral-content w-20 rounded-full">
                   <span class="text-xl">{{searchResult.name.slice(-1)}}</span>
                 </div>
               </div>
             </div>
-            <h2 class="text-2xl self-center">{{searchResult.name}}</h2>
+            <h2 class="text-2xl self-center mx-2">{{searchResult.name}}</h2>
           </div>
           <div class="modal-action">
             <form method="dialog" class="space-x-2">
@@ -101,7 +101,7 @@
 <script setup>
 import {ref,onMounted} from 'vue'
 import {supabase} from '@/supabase'
-import {getUserAvatar} from '@/utils/supabase'
+import {getUserAvatar, getFriend} from '@/utils/supabase'
 import icon from '@/components/widgets/icon.vue'
 import toast from '@/components/widgets/toast.vue'
 
@@ -114,38 +114,12 @@ const friends = ref([])
 const friendindex = ref(0)
 
 onMounted(()=>{
-  getFriend()
+  fetchFriend()
 })
 
-const getFriend = async() => {
-  const {data:friendships,error:friendshipsError} = await supabase
-    .from('friendships')
-    .select('frienduser_id')
-    .eq('user_id', userData.auth.id)
-
-  if (friendshipsError){
-    console.log(friendshipsError)
-    return
-  }
-  const friendUUIDs = friendships.map(friendship => friendship.frienduser_id);
-
-  const { data:friendshipsUsers, error:friendshipsUsersError } = await supabase
-    .from('users')
-    .select()
-    .in('uuid', friendUUIDs)
-
-  if(friendshipsUsersError){
-    console.log(friendshipsUsersError)
-    return
-  }
-
-  friends.value = friendshipsUsers
-  friendindex.value = 0 //避免刪除好友後錯誤
-  for (const friend of friends.value) {
-    if (friend.avatar !== null) {
-      friend.avatarurl = await getUserAvatar(friend.uuid);
-    }
-  }
+const fetchFriend = async() => {
+  friends.value = await getFriend()
+  friendindex.value = 0 //重置modal避免刪除好友後錯誤
 }
 
 const delFriend = async() => {
@@ -156,7 +130,7 @@ const delFriend = async() => {
     toastRef.value.showToast(`錯誤${error.code}`, 'alert-error')
   }
   toastRef.value.showToast('刪除好友成功', 'alert-success')
-  getFriend()
+  fetchFriend()
 }
 
 const addFriend = async() => {
@@ -172,8 +146,8 @@ const addFriend = async() => {
     return
   }
   toastRef.value.showToast('加入好友成功', 'alert-success')
-  searchResult.value = {}
-  getFriend()
+  clearSearchResult()
+  fetchFriend()
 }
 
 const searchFriend = async() => {
@@ -192,7 +166,7 @@ const searchFriend = async() => {
     }
 
     toastRef.value.showToast(toastmsg, 'alert-error')
-    searchResult.value = {}
+    clearSearchResult()
     return
   }
   searchResult.value = data
@@ -204,6 +178,7 @@ const searchFriend = async() => {
 
 const clearSearchResult = () => {
   searchResult.value = {}
+  searchFrienduuid.value = ''
 }
 
 const showaddfriendmodal = () => {

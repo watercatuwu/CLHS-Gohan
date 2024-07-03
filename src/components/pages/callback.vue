@@ -20,6 +20,7 @@ onMounted(async() => {
   // 檢查是否登入
   if (user) {
     const name = user.user_metadata.name
+    console.log(user)
     const classAndNumber = name.slice(0, 6).split('.')
     //檢查用戶資料是否存在
     const { data: existedData, error: fetchError } = await supabase

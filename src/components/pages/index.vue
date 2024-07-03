@@ -10,7 +10,10 @@
             </div>
             <h1 class="text-4xl font-bold">CLHS Gohan</h1>
             <p class="my-4">非官方中大壢中熱食部點餐系統</p>
-            <login />
+            <div class="flex flex-row justify-center items-center gap-1">
+              <login />
+              <demologin />
+            </div>
             <div class="my-4">
               <a href="https://github.com/watercatuwu/clhs-gohan/blob/main/privacy.md" class="link" target="_blank" rel="noopener noreferrer">隱私權政策</a>
             </div>
@@ -44,6 +47,7 @@
 import angledownicon from '@/assets/icons/angle-down.svg'
 
 import login from "@/components/widgets/login.vue";
+import demologin from '@/components/widgets/demologin.vue';
 import roadmap from "@/components/widgets/roadmap.vue";
 import features from "@/components/widgets/features.vue";
 
