@@ -39,7 +39,7 @@ onMounted(async() => {
           class: classAndNumber[0],
           number: classAndNumber[1],
           stuid: user.email.slice(1,7),
-          tags: ['熱食部會員'],
+          role: '熱食部會員',
         }])
         if (error) {
           console.log(error)
@@ -66,11 +66,12 @@ onMounted(async() => {
       }
 
       data = newData
-    } else if(existedData.class!==classAndNumber[0] || existedData.number!==classAndNumber[1]) {
+    } else if(existedData.name!==name || existedData.class!==classAndNumber[0] || existedData.number!==classAndNumber[1]) {
       console.log('update')
       //檢查用戶資料是否更改(class&number)
       const { error:updateError } = await supabase.from('users')
         .update({
+          name: name,
           class: classAndNumber[0],
           number: classAndNumber[1]
         })

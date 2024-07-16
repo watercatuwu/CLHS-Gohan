@@ -1,7 +1,7 @@
 <template>
     <warning :msg="warningMsg" />
     <dayselect @update="updateProduct" />
-    <div class="card bg-base-200 shadow-md border-gray-400">
+    <div v-if="!isLoading" class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <h2 class="card-title text-xl"><icon name="cart" />購物車<span class="badge badge-primary">{{Object.keys(cart).length}}</span></h2>
             <div v-if="Object.keys(cart).length > 0" class="overflow-auto max-h-96">
@@ -32,8 +32,8 @@
                   </tbody>
                 </table>
             </div>
-            <button v-show="isFormClosed || !products.isOpenToday" disabled class="btn btn-neutral" >表單已截止</button>
-            <button v-show="!isFormClosed && products.isOpenToday" @click="choosebot" class="btn btn-accent" >選擇困難小幫手</button>
+            <button v-show="isFormClosed() || !products.isOpenToday" disabled class="btn btn-neutral" >表單已截止</button>
+            <button v-show="!isFormClosed() && products.isOpenToday" @click="choosebot" class="btn btn-accent" >選擇困難小幫手</button>
             <button v-show="Object.keys(cart).length > 0" @click="checkout" class="btn btn-primary" >結帳</button>
             <button v-show="Object.keys(cart).length > 0" @click="clearCart" class="btn btn-error" >清空購物車</button>
         </div>
@@ -41,7 +41,7 @@
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <h2 class="card-title text-xl"><icon name="store" />商品</h2>
-            <h2 v-if="!products.isOpenToday" class="card-title text-xl">本日放假</h2>
+            <h2 v-if="!products.isOpenToday" class="card-title text-xl">本日公休</h2>
             <div v-if="products.isOpenToday" class="overflow-x-auto">
                 <table class="table">
                   <thead>
@@ -53,12 +53,12 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="product in products.data" class="border-0">
+                    <tr v-for="product in products.data" v-show="product.name!=='-'" class="border-0">
                       <th>{{product.code}}</th>
                       <td>{{product.name}}</td>
                       <td>{{product.price}}</td>
                       <td>
-                        <button @click="addToCart(product)" :disabled="isFormClosed" class="btn btn-secondary btn-sm whitespace-nowrap">加入</button>
+                        <button @click="addToCart(product)" :disabled="isFormClosed()" class="btn btn-secondary btn-sm whitespace-nowrap">加入</button>
                       </td>
                     </tr>
                   </tbody>
@@ -135,16 +135,13 @@ import { supabase } from '@/supabase'
 import toast from '@/components/widgets/toast.vue'
 
 const payment = ref('')
-const isDataGet = ref(false)
 const isLoading = ref(true)
 
-const isFormClosed = ref(false)
 const now = DateTime.now().setZone('Asia/Taipei')
 const sysNow = now.hour>=13 ? now.plus({days: 1}) : now
+const closeTime = ref(null)
 
 const warningMsg = ref('')
-
-isFormClosed.value =  now.hour < 13 && now.hour > 10 ? true : false
 
 const products = ref({})
 
@@ -158,10 +155,14 @@ const fetchMenus = async() => {
     console.log(error)
   }else{
     isLoading.value = false
-    const closeTime = DateTime.fromISO(data.closeTime).setLocale('zh-tw')
-    warningMsg.value = `點餐截止時間:  ${closeTime.toFormat('T')}`
+    closeTime.value = DateTime.fromISO(data.closetime).setLocale('zh-tw')
+    warningMsg.value = `點餐截止時間:  ${closeTime.value.toFormat('T')}`
     return setComboMeal(data)
   }
+}
+
+const isFormClosed = () => {
+  return now > closeTime.value ? true : false
 }
 
 const updateProduct = async() =>{

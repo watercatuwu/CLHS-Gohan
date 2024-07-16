@@ -28,7 +28,7 @@
             <p class="opacity-50">{{userData.auth.email}}</p>
           </div>
           <div class="flex gap-2">
-            <div v-for="(tag, index) in userData.data.tags" class="badge badge-primary text-base">{{tag}}</div>
+            <div class="badge badge-primary text-base">{{userData.data.role}}</div>
             <div class="badge badge-neutral text-base">創建日期:{{DateTime.fromISO(userData.auth.created_at).toISODate()}}</div>
           </div>
         </div>

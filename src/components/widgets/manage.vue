@@ -21,7 +21,7 @@
     </div>
     <div class="flex flex-between">
         <div class="dropdown">
-            <div tabindex="0" role="button"  class="btn m-1">更換表格類型</div>
+            <div tabindex="0" role="button"  class="btn m-1">切換表格類型</div>
             <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-300 rounded-box w-52">
             <li @click="stuOrder"><a>學生排序</a></li>
             <li @click="foodOrder"><a>餐點排序</a></li>

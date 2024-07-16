@@ -29,9 +29,16 @@
                 <span>{{link.name}}</span>
               </RouterLink>
             </li>
+            <li v-if="userData.data.role==='事務股長'" @click="isOpen = !isOpen" class="text-lg transition transform ease-in-out duration-300 scale-100 hover:scale-105 active:scale-100">
+              <RouterLink to="manage" :class="{'bg-primary': currentPath === '/manage', 'text-primary-content': currentPath === '/manage'}">
+                <icon name="chart" />
+                <span>事務管理</span>
+              </RouterLink>
+            </li>
           </ul>
           <div v-if="sponsorsData.length>0" class="fixed bottom-0 p-4 w-80">
             <sponsors
+              class="hidden md:block"
               :name="sponsorsData[sponsorsIndex].name"
               :image="sponsorsData[sponsorsIndex].image"
               :title="sponsorsData[sponsorsIndex].title"
@@ -71,7 +78,6 @@ const links = [
   { name: '訂單', path: '/order', icon: 'receipt' },
   { name: '個人資料', path: '/profile', icon: 'user' },
   { name: '好友', path: '/friends', icon: 'users' },
-  { name: '班級統計', path: '/manage', icon: 'chart' },
 ]
 
 const avatarUrl = ref('')

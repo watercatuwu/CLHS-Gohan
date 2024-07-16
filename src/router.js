@@ -18,7 +18,7 @@ const routes = [
   { path: '/shop', name: 'shop', component: shop, meta: { title: '商店 | CLHS Gohan', requiresAuth: true, navbar: true } },
   { path: '/order', name: 'order', component: order, meta: { title: '訂單 | CLHS Gohan', requiresAuth: true, navbar: true } },
   { path: '/profile', name: 'profile', component: profile, meta: { title: '個人檔案 | CLHS Gohan', requiresAuth: true, navbar: true } },
-  { path: '/manage', name: 'manage', component: manage, meta: { title: '管理 | CLHS Gohan', requiresAuth: true, navbar: true } },
+  { path: '/manage', name: 'manage', component: manage, meta: { title: '管理 | CLHS Gohan', requiresAuth: true, requiresRole: '事務股長',navbar: true } },
   { path: '/:pathMatch(.*)*', name: '404', component: NotFound, meta: { title: '404 | CLHS Gohan', requiresAuth: true } },
   { path: '/callback', name: 'callback', component: callback, meta: { title: '登入中...', navbar: false } },
   { path: '/test', name: 'test', component: test, meta: { title: '測試 | CLHS Gohan', navbar: false } },
@@ -32,7 +32,7 @@ const router = createRouter({
 
 router.beforeEach(async(to, from) => {
   document.title = to.meta.title
-  const userData = sessionStorage.getItem('userData')
+  const userData = JSON.parse(sessionStorage.getItem('userData'))
   if (to.meta.requiresAuth && !userData) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -43,6 +43,11 @@ router.beforeEach(async(to, from) => {
 
     return {
       path: '/',
+    }
+  }
+  if (to.meta.requiresRole && userData.data.role !== to.meta.requiresRole) {
+    return {
+      path: '/home',
     }
   }
 })

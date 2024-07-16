@@ -86,6 +86,7 @@
           </div>
         </div>
         <h2 class="text-xl font-bold">{{friends[friendindex].name}}</h2>
+        <div class="badge badge-primary text-base">{{friends[friendindex].role}}</div>
         <p class="text-gray-400">uuid:{{friends[friendindex].uuid}}</p>
         <div class="modal-action">
           <form method="dialog">

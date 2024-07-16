@@ -1,7 +1,7 @@
 <template>
     <div class="min-h-[100dvh]">
       <div class="container mx-auto p-2 space-y-2">
-            <manage />
+          <manage />
         </div>
     </div>
 </template>
