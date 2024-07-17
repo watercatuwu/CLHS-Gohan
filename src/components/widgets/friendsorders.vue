@@ -88,7 +88,6 @@ const fetchFriend = async() => {
 
 const fetchFriendOrders = async() => {
     friendOrders.value = await getFriendOrders()
-    console.log(friendOrders.value)
 }
 
 const getuserOrders = (uuid) => {

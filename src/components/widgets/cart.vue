@@ -156,7 +156,7 @@ const fetchMenus = async() => {
   }else{
     isLoading.value = false
     closeTime.value = DateTime.fromISO(data.closetime).setLocale('zh-tw')
-    warningMsg.value = `點餐截止時間:  ${closeTime.value.toFormat('T')}`
+    warningMsg.value = `點餐截止時間:  ${closeTime.value.toFormat('ccc t')}`
     return setComboMeal(data)
   }
 }

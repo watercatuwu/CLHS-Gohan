@@ -56,8 +56,8 @@ export const getFriend = async() => {
 export const getFriendOrders = async() => {
   const userData = JSON.parse(sessionStorage.getItem('userData'))
   const now = DateTime.now().setZone('Asia/Taipei')
-  const prevweek = now.minus({ days: 7 })
-  const nextweek = now.plus({ days: 7 })
+  const prevweek = now.minus({ days: 3 })
+  const nextweek = now.plus({ days: 5 })
 
   const {data:friendships,error:friendshipsError} = await supabase
     .from('friendships')

@@ -3,7 +3,7 @@
         <figure class="w-full h-3 bg-primary"></figure>
         <div class="card-body">
           <div>
-            <input id="avatarinput" @change="uploadAvatar" type="file" accept="image/png, image/jpeg, image/gif" class="hidden" />
+            <input v-if="userData.data.stuid !== '000000'" id="avatarinput" @change="uploadAvatar" type="file" accept="image/png, image/jpeg, image/gif" class="hidden" />
             <div @click="chooseAvatar" class="cursor-pointer tooltip" data-tip="更換頭像">
               <span class="absolute inset-0 flex items-center justify-center rounded-full z-10 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/50"><icon name='camera'/></span>
               <div v-if="avatarUrl!==null" class="avatar">

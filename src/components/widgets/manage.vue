@@ -31,12 +31,13 @@
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
             <!--stutable-->
-            <table v-if="tableType == 'stu'" class="table">
+            <table v-if="tableType == 'stu'" class="table table-zebra">
               <thead>
                 <tr>
                   <th>座號</th>
                   <th>餐點</th>
                   <th>金額</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -44,6 +45,9 @@
                   <th>{{t.number}}</th>
                   <td>{{getordercode(t.order)}}</td>
                   <td>{{priceSum(t.order)}}</td>
+                  <td>
+                    <button @click="setpay(t.id)" class="btn btn-sm btn-primary" :disabled="t.isPay">{{paidmsg(t.isPay)}}</button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -69,6 +73,7 @@
               </table>
         </div>
     </div>
+    <toast ref="toastRef" />
 </template>
 
 <script setup>
@@ -76,13 +81,17 @@ import { ref, onMounted } from 'vue'
 import { DateTime } from 'luxon';
 import { supabase } from '@/supabase'
 import { priceSum } from '@/utils/utils'
-import dayselect from '@/components/widgets/dayselect.vue'
 import { selectedDay } from '@/reactive/cart'
+
+import dayselect from '@/components/widgets/dayselect.vue'
+import toast from '@/components/widgets/toast.vue'
 
 const products = ref([])
 
 const table = ref([])
 const tableType = ref("stu")
+
+const toastRef = ref(null)
 
 const fetchDatas = async () => {
   const userData = JSON.parse(sessionStorage.getItem('userData'))
@@ -158,5 +167,19 @@ const ordersCount = () => {
       })
     }
     products.value = obj
+}
+
+const paidmsg = (isPay) => {
+  return isPay ? "已付款" : "未付款"
+}
+
+const setpay = async (id) => {
+  const {error} = await supabase.from('orders').update({isPay: true}).eq('id', id)
+  if (error){
+    console.log(error)
+    return
+  }
+  updateDatas()
+  toastRef.value.showToast('已付款', 'alert-success')
 }
 </script>

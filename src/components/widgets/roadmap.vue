@@ -5,7 +5,7 @@
             <ul class="steps w-full">
                 <li class="step step-success">開發階段</li>
                 <li class="step step-success">測試階段</li>
-                <li class="step">正式上線(9/1)</li>
+                <li class="step">正式上線(待定)</li>
             </ul>
         </div>
     </div>

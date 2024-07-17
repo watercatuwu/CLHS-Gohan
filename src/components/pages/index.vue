@@ -36,10 +36,10 @@
   </div>
   <roadmap />
   <footer class="footer flex justify-center items-center p-4 bg-neutral text-neutral-content">
-    <aside class="items-center grid-flow-col">
-      <p>CLHS Gohan © 2024 - All right reserved.</p>
+    <aside class="flex justify-between items-center">
+      <p>CLHS Gohan © 2024</p>
       <a href="https://github.com/watercatuwu/clhs-gohan/blob/main/privacy.md" class="link" target="_blank" rel="noopener noreferrer">隱私權政策</a>
-      <p>v0.0.6</p>
+      <p>v{{packageinfo.version}}</p>
     </aside>
   </footer>
 </template>
@@ -53,6 +53,8 @@ import demologin from '@/components/widgets/demologin.vue';
 import roadmap from "@/components/widgets/roadmap.vue";
 import features from "@/components/widgets/features.vue";
 import usercounter from "@/components/widgets/usercounter.vue";
+
+import packageinfo from '../../../package.json'
 
 import { onMounted } from 'vue'
 

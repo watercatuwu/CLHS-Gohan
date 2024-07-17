@@ -2,10 +2,12 @@
     <dayselect @update="updateOrders" />
     <div class="card bg-base-200 shadow-md border-gray-400">
         <div class="card-body">
-            <div class="flex justify-between">
+            <div class="flex items-center gap-2">
               <h2 class="card-title text-xl">
                 <receipticon /> 我的訂單
               </h2>
+              <span v-if="isPay" class="badge badge-lg" :class="{ 'badge-success': isPay }">已付款</span>
+              <span v-else class="badge badge-lg" :class="{ 'badge-error': !isPay }">未付款</span>
             </div>
             <transition name="fade" mode="out-in">
             <div class="overflow-x-auto max-h-72">
@@ -38,8 +40,7 @@
             </div>
             </transition>
             <div class="card-actions justify-end mt-2">
-              <button @click="fetchOrders" class="btn btn-secondary btn-sm mx-1">重新整理</button>
-              <button @click="cancelOrders" :disabled="orders.isPay || cantCancel" class="btn btn-error btn-sm mx-1">取消訂單</button>
+              <button @click="cancelOrders" :disabled="isPay || cantCancel" class="btn btn-error btn-sm mx-1">取消訂單</button>
             </div>
         </div>
     </div>
@@ -61,11 +62,9 @@ import toast from '@/components/widgets/toast.vue'
 
 const now = DateTime.now().setZone('Asia/Taipei')
 const cantCancel = ref(true)
-cantCancel.value =  now.hour < 13 && now.hour > 10 ? true : false
-
-const sysNow = now.hour>=13 ? now.plus({days: 1}) : now
 
 const orders = ref({})
+const isPay = ref(false)
 
 const updateOrders = async () => {
   await fetchOrders()
@@ -83,12 +82,13 @@ async function fetchOrders() {
       showToast('無訂單', 'alert-error')
       cantCancel.value = true
       orders.value = {}
+      isPay.value = false
     }
     return
   }
-  console.log(data)
   cantCancel.value = false
   orders.value = data.order
+  isPay.value = data.isPay
 }
 
 onMounted(async() => {
